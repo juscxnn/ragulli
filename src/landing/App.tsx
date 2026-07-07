@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Landing router. Reads window.location.pathname and renders the
 // matching page. The pathname is consulted on mount and on every
 // popstate; the home page also re-checks when the user clicks an
