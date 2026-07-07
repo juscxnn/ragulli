@@ -1,0 +1,6 @@
+# Cloudflare Pages redirects
+#
+# The app is served at /app/* and the landing site at /. Vite multi-page
+# setup produces a /app/index.html that the SPA uses. We do SPA-style
+# fallback for the app shell so client-side routing works after a refresh.
+/app/*    /app/index.html   200

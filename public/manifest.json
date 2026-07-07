@@ -1,0 +1,33 @@
+{
+  "name": "RAGülli",
+  "short_name": "RAGülli",
+  "description": "Your files. Your AI. Your browser. A browser-only private RAG tool.",
+  "theme_color": "#0B2027",
+  "background_color": "#0B2027",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "mul",
+  "icons": [
+    {
+      "src": "/logo-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-mark-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["productivity", "education", "utilities"]
+}
