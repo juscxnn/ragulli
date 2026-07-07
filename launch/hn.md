@@ -2,7 +2,7 @@
 
 ## Title
 
-Show HN: RAGülli – private RAG in your browser, no account, no server
+Show HN: RAGülli – private RAG in your browser, no account, no server
 
 ## Body
 

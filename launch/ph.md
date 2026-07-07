@@ -1,8 +1,8 @@
-# Product Hunt launch — RAGülli
+# Product Hunt launch — RAGülli
 
 ## Name
 
-RAGülli
+RAGülli
 
 ## Tagline
 
@@ -10,13 +10,13 @@ Private RAG in your browser. No account, no server.
 
 ## Description
 
-Drop a PDF, DOCX, Markdown file, or URL. RAGülli parses, chunks, and embeds it entirely inside your browser tab — PDF.js and Transformers.js in a Web Worker, stored in IndexedDB and OPFS. Ask a question and every claim in the answer links to the exact line in the original file. Bring your own key for OpenAI, Anthropic, Google, MiniMax, or Kimi, or run a model fully in-browser with WebLLM. Works offline after first load. No signup, no telemetry, AGPL-3.0 open source.
+Drop a PDF, DOCX, Markdown file, or URL. RAGülli parses, chunks, and embeds it entirely inside your browser tab — PDF.js and Transformers.js in a Web Worker, stored in IndexedDB and OPFS. Ask a question and every claim in the answer links to the exact line in the original file. Bring your own key for OpenAI, Anthropic, Google, MiniMax, or Kimi, or run a model fully in-browser with WebLLM. Works offline after first load. No signup, no telemetry, AGPL-3.0 open source.
 
 ## First maker comment
 
 Hi Product Hunt.
 
-I built RAGülli because I read a lot of PDFs I'm not comfortable uploading anywhere — contracts, medical letters, half-finished research. Every "chat with your PDF" tool asks me to hand the file to a server first, and I kept declining.
+I built RAGülli because I read a lot of PDFs I'm not comfortable uploading anywhere — contracts, medical letters, half-finished research. Every "chat with your PDF" tool asks me to hand the file to a server first, and I kept declining.
 
 So this one doesn't have a server. The whole pipeline — parsing, chunking, embedding, retrieval — runs inside the browser tab. The file goes into IndexedDB and OPFS on your machine and stays there. The Content-Security-Policy header enforces this: the page literally cannot phone home, because there is no home.
 

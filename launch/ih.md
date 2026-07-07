@@ -2,7 +2,7 @@
 
 ## Title
 
-I built RAGülli because I'm tired of uploading every PDF I read to someone else's server
+I built RAGülli because I'm tired of uploading every PDF I read to someone else's server
 
 ## Body
 
@@ -10,7 +10,7 @@ Last year I counted the number of documents I fed to "chat with your PDF" tools:
 
 The strange part is that the trade is no longer necessary. Browsers got good. WebAssembly runs transformer models, OPFS gives you a real local file system, IndexedDB holds vector indexes, WebGPU runs a small LLM. The pieces for a fully client-side RAG tool have existed for a while; nobody had assembled them into something a non-engineer would actually enjoy using.
 
-So I built RAGülli. You drop a PDF, DOCX, Markdown file, or URL. It gets parsed, chunked, and embedded entirely inside the browser tab — the embedding model runs in a Web Worker, storage is IndexedDB and OPFS on your machine. You ask a question and the answer cites the exact line in the original file; every citation is a clickable link that opens the source at that spot.
+So I built RAGülli. You drop a PDF, DOCX, Markdown file, or URL. It gets parsed, chunked, and embedded entirely inside the browser tab — the embedding model runs in a Web Worker, storage is IndexedDB and OPFS on your machine. You ask a question and the answer cites the exact line in the original file; every citation is a clickable link that opens the source at that spot.
 
 The positioning wedge became obvious once I mapped the market. Every existing option is either engineer-grade (self-hosted RAG repos you need a weekend and a GPU to stand up) or hosted-and-polished (NotebookLM, Humata, ChatPDF — all of which upload your files). Polished and browser-only was an empty square. The architecture is also the moat: a hosted competitor cannot copy the trust story without giving up their backend, their accounts, and their data flywheel.
 

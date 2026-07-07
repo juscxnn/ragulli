@@ -4,7 +4,7 @@ Rules honored: no emoji, no exclamation marks, every tweet under 280 characters.
 
 ## Tweet 1
 
-I built RAGülli: private RAG that runs entirely in your browser tab.
+I built RAGülli: private RAG that runs entirely in your browser tab.
 
 Drop a PDF. It's parsed, chunked, and embedded on your machine. Ask a question, get an answer that cites the exact line.
 
