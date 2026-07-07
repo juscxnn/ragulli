@@ -6,12 +6,73 @@
 // of the FileSystemDirectoryHandle API the helpers actually use:
 // getDirectoryHandle, getFileHandle, removeEntry, createWritable, getFile,
 // and the async entries() iterator.
+//
+// We also polyfill a few browser-only globals that pdfjs-dist touches
+// at module load. We never actually call the rendering code, so a
+// no-op shim is sufficient to let the module load under jsdom.
+//
+// Finally, we side-effect-import pdfjs-dist's legacy worker module
+// so `globalThis.pdfjsWorker.WorkerMessageHandler` is set. The main
+// build looks for this global when the worker is not available; if
+// it is missing, the main build tries to dynamically `import()`
+// `GlobalWorkerOptions.workerSrc` (a string), which fails in Node.
 
 interface MemoryEntry {
   kind: 'file' | 'directory';
   file?: File;
   children?: Map<string, MemoryEntry>;
 }
+
+// pdfjs-dist v5 reads `globalThis.DOMMatrix` at module load. jsdom
+// does not provide it. We add a minimal no-op shim so the import
+// graph can resolve. None of the methods below are called by our
+// text-only parser path; they exist only to satisfy the type.
+if (typeof globalThis.DOMMatrix === 'undefined') {
+  class NoopDOMMatrix {
+    constructor(_init?: string | number[] | DOMMatrix) {
+      void _init;
+    }
+    multiplySelf(): NoopDOMMatrix {
+      return this;
+    }
+    translateSelf(): NoopDOMMatrix {
+      return this;
+    }
+    scaleSelf(): NoopDOMMatrix {
+      return this;
+    }
+    invertSelf(): NoopDOMMatrix {
+      return this;
+    }
+    transformPoint(p: { x: number; y: number }): { x: number; y: number } {
+      return p;
+    }
+  }
+  (globalThis as unknown as { DOMMatrix: typeof DOMMatrix }).DOMMatrix =
+    NoopDOMMatrix as unknown as typeof DOMMatrix;
+}
+
+// Pre-load the legacy worker module so it registers
+// `globalThis.pdfjsWorker.WorkerMessageHandler`. The main pdfjs
+// build falls back to this global when no real worker is
+// configured; without it, the main build tries to dynamically
+// `import(GlobalWorkerOptions.workerSrc)` (a string) which throws
+// in Node because empty `workerSrc` is not a resolvable specifier.
+// We import this lazily so any failure is contained to tests that
+// actually need it.
+async function ensurePdfjsFakeWorker(): Promise<void> {
+  if ((globalThis as unknown as { pdfjsWorker?: { WorkerMessageHandler?: unknown } }).pdfjsWorker) {
+    return;
+  }
+  try {
+    await import('pdfjs-dist/legacy/build/pdf.worker.mjs');
+  } catch {
+    // Some environments (e.g. ESM-only tooling) cannot load the
+    // legacy worker. Tests that need pdfjs will skip in that case.
+  }
+}
+
+void ensurePdfjsFakeWorker();
 
 function createMemoryHandle(
   root: Map<string, MemoryEntry>,
