@@ -148,13 +148,33 @@ function articleHtml() {
 `;
 }
 
+async function exists(rel) {
+  try {
+    await fs.access(resolve(OUT, rel));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function main() {
   console.log('build-samples: generating sample files');
   await ensureOut();
-  await writePdf('sample-paper.pdf', paper);
-  await writePdf('sample-contract.pdf', contract);
-  await fs.writeFile(resolve(OUT, 'sample-chapter.md'), chapterMd(), 'utf8');
-  await fs.writeFile(resolve(OUT, 'sample-article.html'), articleHtml(), 'utf8');
+  // Skip files that already exist; this keeps the build idempotent and
+  // avoids spurious diffs on every `pnpm build` run. To force a rebuild,
+  // delete the files in public/sample-files/ first.
+  if (!(await exists('sample-paper.pdf'))) {
+    await writePdf('sample-paper.pdf', paper);
+  }
+  if (!(await exists('sample-contract.pdf'))) {
+    await writePdf('sample-contract.pdf', contract);
+  }
+  if (!(await exists('sample-chapter.md'))) {
+    await fs.writeFile(resolve(OUT, 'sample-chapter.md'), chapterMd(), 'utf8');
+  }
+  if (!(await exists('sample-article.html'))) {
+    await fs.writeFile(resolve(OUT, 'sample-article.html'), articleHtml(), 'utf8');
+  }
   console.log('build-samples: done');
 }
 
