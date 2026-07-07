@@ -25,6 +25,11 @@ import { WorkspaceSwitcher } from '@/features/workspace/sidebar/WorkspaceSwitche
 import { Canvas } from '@/features/workspace/canvas/Canvas';
 import { ChatPanel } from '@/features/workspace/chat/ChatPanel';
 import { SourceViewer, type SourceViewerHandle } from '@/features/workspace/SourceViewer';
+import {
+  Onboarding,
+  shouldShowOnboarding,
+  type OnboardingSampleId,
+} from '@/features/onboarding/Onboarding';
 import { useWorkspaceStore } from '@/features/workspace/store';
 import { ingestFiles, reportIngestError } from '@/features/workspace/ingest';
 import { db } from '@/lib/db';
@@ -51,6 +56,7 @@ export const App: FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [mobilePane, setMobilePane] = useState<MobilePane>('workspace');
   const viewerRef = useRef<SourceViewerHandle>(null);
 
@@ -193,6 +199,20 @@ export const App: FC = () => {
     return () => window.removeEventListener(OPEN_SETTINGS_EVENT, onOpen);
   }, []);
 
+  // First-run onboarding. Opens once (localStorage flag); re-openable
+  // from the info dialog's "Take the tour".
+  useEffect(() => {
+    if (shouldShowOnboarding()) setOnboardingOpen(true);
+  }, []);
+
+  const onboardingPickSample = useCallback(
+    (id: OnboardingSampleId) => {
+      const wsId = useWorkspaceStore.getState().activeWorkspaceId;
+      if (wsId) void fetchAndIngestSample(id, wsId, pushTrust);
+    },
+    [pushTrust],
+  );
+
   const onTemplatePick = useCallback((t: Template) => {
     setTemplatePickerOpen(false);
     void t;
@@ -280,8 +300,22 @@ export const App: FC = () => {
 
       <TrustPanel />
 
+      <Onboarding
+        open={onboardingOpen}
+        onClose={() => setOnboardingOpen(false)}
+        onPickSample={onboardingPickSample}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
+
       <Settings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <InfoDialog open={infoOpen} onClose={() => setInfoOpen(false)} />
+      <InfoDialog
+        open={infoOpen}
+        onClose={() => setInfoOpen(false)}
+        onTour={() => {
+          setInfoOpen(false);
+          setOnboardingOpen(true);
+        }}
+      />
       <TemplatePickerDialog
         open={templatePickerOpen}
         onClose={() => setTemplatePickerOpen(false)}
@@ -361,7 +395,11 @@ const Topbar: FC<{ onOpenInfo: () => void; onOpenSettings: () => void }> = ({
   </header>
 );
 
-const InfoDialog: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => (
+const InfoDialog: FC<{ open: boolean; onClose: () => void; onTour: () => void }> = ({
+  open,
+  onClose,
+  onTour,
+}) => (
   <Dialog
     open={open}
     onClose={onClose}
@@ -375,11 +413,16 @@ const InfoDialog: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
         file, ask a question, get an answer with the line cited. Nothing leaves this tab
         unless you explicitly send a question to a frontier model with your own key.
       </p>
-      <ul className="text-xs text-[var(--color-fg-muted)] list-disc pl-5">
+      <ul className="text-xs text-[var(--color-fg-muted)] list-disc pl-5 space-y-1">
         <li>No account. No signup. No telemetry.</li>
         <li>Every byte of your files stays in this tab.</li>
         <li>BYOK for cloud models; an in-browser model is available too.</li>
       </ul>
+      <div>
+        <Button variant="secondary" size="sm" onClick={onTour}>
+          Take the tour
+        </Button>
+      </div>
     </div>
   </Dialog>
 );
