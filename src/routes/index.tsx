@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Single root route. Spec §4.1: "Router — None needed (single-page app)."
-// This file is a placeholder for future client-side routing (e.g. deep
-// links from /compare/* landing pages that open the app with a
-// pre-filled template).
+// App-level routing concerns (deep-link query params, settings dialog,
+// source viewer) live in `src/App.tsx`. This file remains as the
+// canonical place to mount a future client-side router.
 
 import type { FC } from 'react';
 
