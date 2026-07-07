@@ -8,10 +8,12 @@
 // (scanned image), every page returns empty text and we surface a
 // warning in `meta` so the trust panel can show the limitation.
 
-import { getDocument, GlobalWorkerOptions, type TextItem } from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
 import type { ParseResult } from './types';
 
 const PDFJS_WORKER_URL = 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+type PdfTextItem = { str: string; hasEOL?: boolean };
 
 let workerSrcSet = false;
 async function ensureWorker(): Promise<void> {
@@ -31,7 +33,7 @@ async function ensureWorker(): Promise<void> {
 function joinTextItems(items: ReadonlyArray<unknown>): string {
   const out: string[] = [];
   for (const raw of items) {
-    const item = raw as TextItem;
+    const item = raw as PdfTextItem;
     if (typeof item.str === 'string' && item.str.length > 0) {
       out.push(item.str);
       if (!item.hasEOL) out.push(' ');
@@ -43,7 +45,7 @@ function joinTextItems(items: ReadonlyArray<unknown>): string {
 export async function parsePdf(file: File | Blob): Promise<ParseResult> {
   await ensureWorker();
   const data = new Uint8Array(await file.arrayBuffer());
-  const doc = await getDocument({ data, isEvalSupported: false }).promise;
+  const doc = await getDocument({ data }).promise;
   const pageMap: ParseResult['pageMap'] = [];
   const pageTexts: string[] = [];
   let emptyPages = 0;

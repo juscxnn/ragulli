@@ -29,10 +29,13 @@ function loadPipeline(): Promise<FeatureExtractionPipeline> {
     // offline. We do not change `allowRemoteModels` — the user must
     // trigger the first load by opening the app, at which point the
     // trust panel can show "downloading model" in plain English.
-    env.useFsCache = true;
-    pipelinePromise = pipeline('feature-extraction', MODEL_ID, {
-      dtype: 'q8',
-    });
+    env.useFSCache = true;
+    const p = (pipeline as unknown as (
+      task: string,
+      model: string,
+      opts?: Record<string, unknown>,
+    ) => Promise<FeatureExtractionPipeline>)('feature-extraction', MODEL_ID, { dtype: 'q8' });
+    pipelinePromise = p;
   }
   return pipelinePromise;
 }

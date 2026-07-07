@@ -12,12 +12,13 @@ import type { ParseResult } from './types';
 
 export class UrlFetchError extends Error {
   readonly status: number | undefined;
-  readonly cause: unknown;
   constructor(message: string, opts: { status?: number; cause?: unknown } = {}) {
     super(message);
     this.name = 'UrlFetchError';
     this.status = opts.status;
-    this.cause = opts.cause;
+    if (opts.cause !== undefined) {
+      (this as { cause?: unknown }).cause = opts.cause;
+    }
   }
 }
 

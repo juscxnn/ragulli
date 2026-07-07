@@ -55,14 +55,18 @@ export async function getFile(path: string): Promise<File> {
 export async function listAll(): Promise<string[]> {
   const root = await getRoot();
   const out: string[] = [];
-  for await (const [dirName, dirHandle] of root.entries() as AsyncIterableIterator<
-    [string, FileSystemHandle]
-  >) {
+  const rootAny = root as unknown as {
+    entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
+  };
+  for await (const [dirName, dirHandle] of rootAny.entries()) {
     if (dirHandle.kind !== 'directory') {
       out.push(dirName);
       continue;
     }
-    for await (const [name] of (dirHandle as FileSystemDirectoryHandle).entries()) {
+    const subAny = dirHandle as unknown as {
+      entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
+    };
+    for await (const [name] of subAny.entries()) {
       out.push(`${dirName}/${name}`);
     }
   }
@@ -71,7 +75,10 @@ export async function listAll(): Promise<string[]> {
 
 export async function clearAll(): Promise<void> {
   const root = await getRoot();
-  for await (const [name] of root.entries() as AsyncIterableIterator<[string, FileSystemHandle]>) {
+  const rootAny = root as unknown as {
+    entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
+  };
+  for await (const [name] of rootAny.entries()) {
     try {
       await root.removeEntry(name, { recursive: true });
     } catch {
