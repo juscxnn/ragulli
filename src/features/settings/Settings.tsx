@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Settings — modal placeholder. Subagent C wires the actual controls.
 
 import { useState, type FC } from 'react';
@@ -41,7 +41,7 @@ export const Settings: FC<{ open: boolean; onClose: () => void }> = ({ open, onC
         </div>
       ) : null}
       {tab === 'about' ? (
-        <p className="text-sm">RAGülli v0.1.0. AGPL-3.0. No analytics, no telemetry.</p>
+        <p className="text-sm">RAGülli v0.1.0. AGPL-3.0. No analytics, no telemetry.</p>
       ) : null}
     </Dialog>
   );

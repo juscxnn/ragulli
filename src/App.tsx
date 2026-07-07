@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // App — single-page shell. Topbar (logo + tagline + info + settings).
 // Center: the FirstDrop hero. Bottom-right: trust chip.
 
@@ -18,8 +18,8 @@ export const App: FC = () => {
     <div className="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-fg)]">
       <header className="flex items-center justify-between px-6 h-14 border-b border-[var(--color-border)]">
         <div className="flex items-center gap-3">
-          <img src={logoMark} alt="RAGülli" width={28} height={28} />
-          <span className="font-serif text-lg text-[var(--color-fg)]">RAGülli</span>
+          <img src={logoMark} alt="RAGülli" width={28} height={28} />
+          <span className="font-serif text-lg text-[var(--color-fg)]">RAGülli</span>
           <span className="hidden sm:inline text-xs text-[var(--color-fg-muted)] ml-2">
             Your files. Your AI. Your browser.
           </span>
@@ -28,7 +28,7 @@ export const App: FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="What is RAGülli?"
+            aria-label="What is RAGülli?"
             leadingIcon={<InfoIcon size={16} />}
           >
             ?

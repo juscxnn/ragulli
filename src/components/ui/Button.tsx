@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Button — the only interactive primitive we use. Dark-theme default.
 // Variants: primary (amber), secondary (slate), ghost (transparent).
 

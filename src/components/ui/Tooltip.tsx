@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tooltip — hover/focus-revealed hint. Pure CSS in V1 (no portal needed).
 
 import { useState, type FC, type ReactNode } from 'react';

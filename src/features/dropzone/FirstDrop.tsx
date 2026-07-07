@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // FirstDrop — the Scene 1 hero. Four big icon-buttons (PDF, URL, TEXT,
 // AUDIO) plus four sample buttons. Disabled until Subagent B wires the
 // ingest pipeline.

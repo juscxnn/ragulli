@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // At-rest crypto helpers for BYOK keys. We derive a per-tab AES-GCM key
 // from a random 256-bit secret generated at session start. The key never
 // leaves the tab; on reload, the encrypted bytes become unreadable.

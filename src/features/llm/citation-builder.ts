@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Citation builder. Given the chunks used as context, slice the
 // assistant's answer into spans that map back to the chunk that contains
 // the quoted text. No fuzzy matching — exact substring slicing.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Landing — Wedge. The 4-quadrant chart. Subagent E animates this.
 
 import type { FC } from 'react';
@@ -12,7 +12,7 @@ export const Wedge: FC = () => (
         { x: 0, y: 0, label: 'Ugly self-hosted RAG', tone: 'muted' },
         { x: 1, y: 0, label: 'Hosted, uploads to a server', tone: 'muted' },
         { x: 0, y: 1, label: 'Browser-only but no polish', tone: 'muted' },
-        { x: 1, y: 1, label: 'RAGülli', tone: 'accent' },
+        { x: 1, y: 1, label: 'RAGülli', tone: 'accent' },
       ].map((q) => (
         <div
           key={`${q.x}-${q.y}`}

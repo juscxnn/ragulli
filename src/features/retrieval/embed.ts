@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Embedding worker wrapper. Subagent B fills the real implementation;
 // this file documents the contract so other modules can import safely.
 

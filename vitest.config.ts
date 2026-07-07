@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Vitest config. We use jsdom for the browser-like environment and the
 // same alias map as Vite so tests can import via `@/...`.
 

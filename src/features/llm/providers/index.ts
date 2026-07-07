@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Provider index. Re-exports for convenience and lists the available
 // provider ids in display order. Subagent C fills in the per-provider
 // modules; here we just declare the public surface.

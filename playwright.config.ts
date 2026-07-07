@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Playwright config. The app is served via `pnpm preview` on port 4173
 // before the test runner starts. E2E tests live under tests/e2e.
 

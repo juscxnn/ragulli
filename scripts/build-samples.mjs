@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // build-samples.mjs — Generate the four sample files referenced by the
 // hero buttons. Two PDFs (research paper + consulting contract), one
 // Markdown chapter, one HTML article. Pure Node; no network access.
@@ -61,7 +61,7 @@ function paper(doc) {
   doc.addPage();
   doc.font('Times-Bold').fontSize(13).text('4. Acknowledgements');
   doc.font('Times-Roman').fontSize(11).text(
-    'This note is a placeholder for the RAGülli sample-files bundle. It is intentionally short. The point is to give the user something to drop into the dropzone that will, end-to-end, exercise the parsing, chunking, embedding, retrieval, and citation pipeline. Real reading happens elsewhere.',
+    'This note is a placeholder for the RAGülli sample-files bundle. It is intentionally short. The point is to give the user something to drop into the dropzone that will, end-to-end, exercise the parsing, chunking, embedding, retrieval, and citation pipeline. Real reading happens elsewhere.',
   );
 }
 

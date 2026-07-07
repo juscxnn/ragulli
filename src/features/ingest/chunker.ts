@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Sliding-window chunker. Subagent B fills in the real implementation;
 // we keep the public shape stable so callers can typecheck today.
 

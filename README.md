@@ -1,12 +1,12 @@
-# RAGülli
+# RAGülli
 
-![RAGülli](./public/og-image.png)
+![RAGülli](./public/og-image.png)
 
 **Your files. Your AI. Your browser.**
 
 Private RAG. No account. No server.
 
-RAGülli is a browser-only private RAG tool. Drop a PDF, a DOCX, a Markdown file, or a URL. The document is parsed, chunked, embedded, and indexed entirely inside your browser tab. Ask a question; the answer cites the exact line in the original file. Nothing leaves the tab unless you have explicitly pasted a BYOK key and asked a question.
+RAGülli is a browser-only private RAG tool. Drop a PDF, a DOCX, a Markdown file, or a URL. The document is parsed, chunked, embedded, and indexed entirely inside your browser tab. Ask a question; the answer cites the exact line in the original file. Nothing leaves the tab unless you have explicitly pasted a BYOK key and asked a question.
 
 ## The 7 design principles
 
@@ -49,7 +49,7 @@ The deployment target is Cloudflare Pages. The static `_headers` and `_redirects
 
 ## AGPL-3.0
 
-RAGülli is free software. It is licensed under the [GNU Affero General Public License v3.0](./LICENSE). If you fork it and run a modified version as a network service, you must publish your modifications.
+RAGülli is free software. It is licensed under the [GNU Affero General Public License v3.0](./LICENSE). If you fork it and run a modified version as a network service, you must publish your modifications.
 
 [![AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](./LICENSE)
 

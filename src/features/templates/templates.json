@@ -48,7 +48,7 @@
     "id": "book-companion",
     "name": "Book companion",
     "icon": "chapter",
-    "description": "Read a book alongside RAGülli. Ask what a chapter meant, who a character is, what an argument was.",
+    "description": "Read a book alongside RAGülli. Ask what a chapter meant, who a character is, what an argument was.",
     "ingestDefaults": { "chunkSize": 900, "chunkOverlap": 120, "ocr": false },
     "defaultPrompt": "You are a reading companion for a book. When asked about a chapter, give a 1-paragraph orientation first, then answer. Always cite the chapter.",
     "quickActions": [

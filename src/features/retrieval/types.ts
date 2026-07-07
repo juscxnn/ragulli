@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Retrieval types. These mirror the spec §4.3 schema. Subagent B extends
 // with the full Dexie schema and search logic, but the shapes are owned
 // here because other features import them.

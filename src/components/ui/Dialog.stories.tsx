@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Story companion for Dialog.
 
 import { useState, type FC } from 'react';
@@ -28,7 +28,7 @@ export const DialogStories: FC = () => {
         }
       >
         <p>
-          Hold the button for one second to confirm. RAGülli stores everything in this browser tab;
+          Hold the button for one second to confirm. RAGülli stores everything in this browser tab;
           clearing it puts you back at the first-open hero.
         </p>
       </Dialog>

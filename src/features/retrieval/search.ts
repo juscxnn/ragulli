@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Cosine-similarity top-k search. Subagent B implements the real version;
 // we keep a stable typecheck surface for callers.
 

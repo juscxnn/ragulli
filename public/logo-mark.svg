@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   SPDX-License-Identifier: AGPL-3.0-only
-  Copyright (c) 2026 RAGülli contributors
+  Copyright (c) 2026 RAGülli contributors
   Hand-built V1 logo. Regenerate via image gen per spec §10.2 once tooling is available.
 
   Brief: abstract "library stamp" feel. Deep forest teal background, warm amber mark.
   Concept: three horizontal bars (indexed documents) with a small opening-book glyph on
   the left, in a soft amber on the deep teal. Reads at 32×32 (favicon) and 1024×1024 (OG).
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RAGülli mark">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="RAGülli mark">
   <rect width="512" height="512" rx="96" fill="#0B2027"/>
   <g transform="translate(96 96)" fill="none" stroke="#E0B158" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
     <!-- spine / opening-book glyph on the left -->

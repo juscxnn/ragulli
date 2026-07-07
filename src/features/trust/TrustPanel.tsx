@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TrustPanel — the always-visible UI surface that says, in plain English,
 // where bytes are going. Compact state is a chip in the bottom-right;
 // active state is a side panel. Subagent D implements the active view.

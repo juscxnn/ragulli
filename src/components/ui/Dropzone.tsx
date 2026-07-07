@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Dropzone — accepts files dropped on the element OR via a hidden <input>.
 // For V1, dropping on the canvas-style card triggers the input click.
 

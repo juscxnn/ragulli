@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // OPFS helpers. We store the original file bytes in OPFS so a "Clear all
 // my data" can wipe them deterministically. The IndexedDB row holds the
 // path, not the bytes.

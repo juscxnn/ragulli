@@ -2,7 +2,7 @@
   "name": "ragulli",
   "version": "0.1.0",
   "private": true,
-  "description": "RAGülli — Your files. Your AI. Your browser. A browser-only private RAG application.",
+  "description": "RAGülli — Your files. Your AI. Your browser. A browser-only private RAG application.",
   "license": "AGPL-3.0-only",
   "type": "module",
   "engines": {

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   SPDX-License-Identifier: AGPL-3.0-only
-  Copyright (c) 2026 RAGülli contributors
+  Copyright (c) 2026 RAGülli contributors
   Hand-built V1 lockup. Regenerate via image gen per spec §10.2 once tooling is available.
 
-  The wordmark "RAGülli" MUST contain U+0308 (combining diaeresis) on the u. We
+  The wordmark "RAGülli" MUST contain U+0308 (combining diaeresis) on the u. We
   embed it as a literal Unicode character in the <text> element. The serif is
   Lora; if it is not installed at render time the browser falls back to a
   generic serif, which is acceptable for the OG image export (resvg-js falls
   back to a system serif for the conversion). The build script renders the
   text via system fonts to PNG.
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256" role="img" aria-label="RAGülli — Private RAG in your browser.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256" role="img" aria-label="RAGülli — Private RAG in your browser.">
   <rect width="1024" height="256" fill="#0B2027"/>
   <!-- mark on the left -->
   <g transform="translate(48 48) scale(0.3125)" fill="none" stroke="#E0B158" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">

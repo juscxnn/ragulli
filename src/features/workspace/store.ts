@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Workspace store. One zustand store per feature area. Subagent D adds
 // the canvas/chat actions; we ship a minimal slice today so the
 // workspace switcher can typecheck.

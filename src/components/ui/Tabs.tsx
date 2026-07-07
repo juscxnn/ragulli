@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tabs — accessible tab list. Controlled component.
 
 import { useId, type FC, type ReactNode } from 'react';

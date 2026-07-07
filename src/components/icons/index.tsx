@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Small SVG icon set used across the UI. Each icon is a React FC that
 // renders a currentColor SVG so it inherits text color. The set covers
 // the four input kinds, the four sample sources, and a few utility icons.

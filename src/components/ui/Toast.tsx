@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Toast — transient feedback at the bottom of the screen. Self-dismissing.
 
 import { useEffect, useState, type FC, type ReactNode } from 'react';

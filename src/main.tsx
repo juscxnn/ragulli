@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // App entry point. Mounts the React tree, registers the PWA service
 // worker, and applies the global stylesheet.
 

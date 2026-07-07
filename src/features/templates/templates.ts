@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Templates — the 6 starter templates per spec §8.5. Subagent D reads
 // this file via the picker; Subagent E reads it for the landing page.
 
@@ -80,7 +80,7 @@ export const TEMPLATES: Template[] = [
     id: 'book-companion',
     name: 'Book companion',
     icon: 'chapter',
-    description: 'Read a book alongside RAGülli. Ask what a chapter meant, who a character is, what an argument was.',
+    description: 'Read a book alongside RAGülli. Ask what a chapter meant, who a character is, what an argument was.',
     ingestDefaults: { chunkSize: 900, chunkOverlap: 120, ocr: false },
     defaultPrompt:
       "You are a reading companion for a book. When asked about a chapter, give a 1-paragraph orientation first, then answer. Always cite the chapter.",

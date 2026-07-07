@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Dialog — minimal modal. Backdrop click + Esc close by default.
 
 import { useEffect, useRef, type FC, type ReactNode } from 'react';

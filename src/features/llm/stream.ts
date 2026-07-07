@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Unified stream interface. Subagent C implements the real per-provider
 // streams; we keep the typecheck surface stable.
 

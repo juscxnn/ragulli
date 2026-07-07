@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Landing — ComparisonTable. RAGülli vs NotebookLM vs Humata vs ChatPDF.
+// Copyright (c) 2026 RAGülli contributors
+// Landing — ComparisonTable. RAGülli vs NotebookLM vs Humata vs ChatPDF.
 
 import type { FC } from 'react';
 
@@ -16,13 +16,13 @@ const ROWS: { label: string; values: [string, string, string, string] }[] = [
 
 export const ComparisonTable: FC = () => (
   <section className="px-6 py-16 max-w-4xl mx-auto">
-    <h2 className="text-2xl font-serif text-[var(--color-fg)] text-center">How RAGülli compares</h2>
+    <h2 className="text-2xl font-serif text-[var(--color-fg)] text-center">How RAGülli compares</h2>
     <div className="mt-8 overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <thead>
           <tr className="text-left text-[var(--color-fg-muted)]">
             <th className="py-2 pr-4"></th>
-            <th className="py-2 pr-4 text-[var(--color-accent)]">RAGülli</th>
+            <th className="py-2 pr-4 text-[var(--color-accent)]">RAGülli</th>
             <th className="py-2 pr-4">NotebookLM</th>
             <th className="py-2 pr-4">Humata</th>
             <th className="py-2 pr-4">ChatPDF</th>

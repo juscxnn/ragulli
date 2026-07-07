@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // BYOK key storage. Each provider key is encrypted with the per-tab
 // secret derived in lib/crypto. After a reload, the encrypted bytes
 // become unreadable — the user re-enters the key once per session.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Ingest pipeline. Subagent B owns this. The shape is fixed here so the
 // UI and the trust panel can import the same types.
 

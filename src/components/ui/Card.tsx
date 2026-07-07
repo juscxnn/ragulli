@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Card — the source-card primitive used on the workspace canvas. Subtle
 // border, soft shadow, optional hover ring (used when draggable).
 

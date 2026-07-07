@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Async iteration helpers. We use a tiny custom chunk splitter so the
 // chat panel can stream tokens without pulling in a stream-parser lib.
 

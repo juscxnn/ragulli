@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TemplatePicker — UI for the 6 starter templates. Disabled state until
 // Subagent D wires the ingest pipeline (the picker already lets users
 // pick; the actual template application waits on the pipeline).

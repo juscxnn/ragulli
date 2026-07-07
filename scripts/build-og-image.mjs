@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // build-og-image.mjs — Convert public/logo-full.svg to public/og-image.png
 // (1200×630, the standard OG size) and export the logo-mark at 192, 512
 // and 512-maskable PNGs. Pure Node + @resvg/resvg-js. No network access.

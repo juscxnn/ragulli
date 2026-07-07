@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Slider — a styled range input. Used for zone weight, chunk size, etc.
 
 import type { ChangeEvent, FC } from 'react';

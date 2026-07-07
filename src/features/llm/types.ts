@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // LLM types. The chat, message, and citation shapes live in
 // `@/features/retrieval/types` because multiple features need them. Here
 // we add the LLM-only shapes (streaming chunk, provider options).
