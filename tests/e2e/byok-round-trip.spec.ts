@@ -184,7 +184,7 @@ test('BYOK round-trip: key encrypts at rest, survives reload, model call is the 
     if (u.host === 'api.openai.com') openaiHits.push(req.url());
   });
 
-  const input = page.locator('input[aria-label="Ask a question"]');
+  const input = page.getByLabel('Ask a question');
   await expect(input).toBeEnabled({ timeout: 10_000 });
   await input.fill('summarize');
   await page.keyboard.press('Enter');

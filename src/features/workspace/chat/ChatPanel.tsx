@@ -14,7 +14,16 @@
 //     extractive answer (quoted passages, real citations) instead of
 //     erroring out. Nothing is sent anywhere in that mode.
 
-import { useCallback, useEffect, useMemo, useRef, useState, type FC, type FormEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useWorkspaceStore } from '../store';
 import { topK, type SearchResult } from '@/features/retrieval/search';
@@ -30,7 +39,7 @@ import {
 } from '@/features/llm';
 import type { BuiltCitation, CitationMode, ProviderId, StreamChunk } from '@/features/llm';
 import { Message } from './Message';
-import { QuickActions, type QuickAction } from './QuickActions';
+import { type QuickAction } from './QuickActions';
 import { composeExtractiveAnswer } from './extractive';
 import { persistChat } from './persist';
 import { useTrustLog } from '@/features/trust/TrustLog';
@@ -53,7 +62,6 @@ export const ChatPanel: FC = () => {
   const streamingMessageId = useWorkspaceStore((s) => s.streamingMessageId);
   const chunksBySource = useWorkspaceStore((s) => s.chunksBySource);
   const zoneWeights = useWorkspaceStore((s) => s.zoneWeights);
-  const ingestProgress = useWorkspaceStore((s) => s.ingestProgress);
   const templateVersion = useWorkspaceStore((s) => s.templateVersion);
 
   const addMessage = useWorkspaceStore((s) => s.addMessage);
@@ -313,8 +321,6 @@ export const ChatPanel: FC = () => {
     return Object.values(chunksBySource).reduce((sum, arr) => sum + arr.length, 0);
   }, [chunksBySource]);
 
-  const showEmpty = sources.length === 0 && !ingestProgress;
-
   // No-key mode indicator. hasKey is a cheap synchronous localStorage
   // read, so recomputing per render keeps the banner honest without
   // extra plumbing.
@@ -326,27 +332,48 @@ export const ChatPanel: FC = () => {
     window.dispatchEvent(new CustomEvent('ragulli:open-settings'));
   }, []);
 
+  const hasSources = sources.length > 0;
+  const noMessages = messages.length === 0;
+  const canAsk = hasSources && !isStreaming;
+
+  const onComposerKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input.trim().length > 0 && canAsk) void submit(input);
+    }
+  };
+
   return (
-    <aside className="h-full flex flex-col bg-[var(--color-surface-1)] border-l border-[var(--color-border)]">
-      <header className="px-4 py-3 border-b border-[var(--color-border)] flex items-center justify-between">
-        <div>
+    <aside className="h-full min-h-0 flex flex-col bg-[var(--color-surface-1)]">
+      <header className="px-4 py-3 border-b border-[var(--color-border)] flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2">
           <h2 className="text-sm font-medium text-[var(--color-fg)]">Chat</h2>
-          <p className="text-[11px] text-[var(--color-fg-muted)]">
-            {sources.length === 0
-              ? 'Drop a file to start'
-              : `${sources.length} source${sources.length === 1 ? '' : 's'} · ${totalChunks} chunks`}
-          </p>
+          <span className="text-[11px] text-[var(--color-fg-muted)]">
+            {hasSources
+              ? `${sources.length} source${sources.length === 1 ? '' : 's'} · ${totalChunks} chunk${totalChunks === 1 ? '' : 's'}`
+              : 'no sources yet'}
+          </span>
         </div>
         {isStreaming ? (
-          <span className="text-[11px] uppercase tracking-wide text-[var(--color-accent)]">
-            streaming
+          <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[var(--color-accent)]">
+            <span className="flex gap-0.5" aria-hidden>
+              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse" />
+              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:150ms]" />
+              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:300ms]" />
+            </span>
+            thinking
           </span>
         ) : null}
       </header>
 
-      <div ref={scrollRef} className="flex-1 overflow-auto px-4 py-4 flex flex-col gap-4">
-        {showEmpty ? (
-          <EmptyState />
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-5">
+        {noMessages ? (
+          <EmptyState
+            hasSources={hasSources}
+            suggestions={actions.slice(0, 4)}
+            onPick={(prompt) => canAsk && void submit(prompt)}
+            disabled={!canAsk}
+          />
         ) : (
           messages.map((m) => (
             <MessageRow
@@ -360,49 +387,62 @@ export const ChatPanel: FC = () => {
         {error ? (
           <div
             role="alert"
-            className="rounded-md border border-[var(--color-danger)]/40 bg-[var(--color-surface-2)] px-3 py-2 text-xs text-[var(--color-danger)]"
+            className="rounded-lg border border-[var(--color-danger)]/40 bg-[var(--color-surface-2)] px-3 py-2 text-xs text-[var(--color-danger)]"
           >
             {error}
           </div>
         ) : null}
       </div>
 
-      <footer className="px-4 py-3 border-t border-[var(--color-border)] flex flex-col gap-2">
-        {keyMissing && sources.length > 0 ? (
+      <footer className="px-4 py-3 border-t border-[var(--color-border)] flex flex-col gap-2.5 shrink-0">
+        {keyMissing && hasSources ? (
           <div
             data-testid="no-key-hint"
-            className="flex items-center justify-between gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-[11px] text-[var(--color-fg-muted)]"
+            className="flex items-center justify-between gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-[11px] text-[var(--color-fg-muted)]"
           >
-            <span>No model connected — answers quote your sources directly.</span>
-            <Button size="sm" variant="ghost" onClick={openSettings}>
-              Open Settings
-            </Button>
+            <span>Local mode — answers quote your sources. Connect a model for synthesis.</span>
+            <button
+              type="button"
+              onClick={openSettings}
+              className="shrink-0 text-[var(--color-accent)] hover:underline"
+            >
+              Connect
+            </button>
           </div>
         ) : null}
-        <QuickActions
-          actions={actions}
-          onSelect={(a) => void submit(a.prompt)}
-          disabled={sources.length === 0 || isStreaming}
-        />
-        <form onSubmit={onSubmitForm} className="flex items-center gap-2">
-          <input
-            type="text"
+        {!noMessages && hasSources ? (
+          <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-0.5 px-1 [scrollbar-width:none]">
+            {actions.map((a) => (
+              <button
+                key={a.label}
+                type="button"
+                onClick={() => void submit(a.prompt)}
+                disabled={!canAsk}
+                className="shrink-0 text-xs px-3 h-7 rounded-full border border-[var(--color-border)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:border-[var(--color-accent)]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {a.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <form onSubmit={onSubmitForm} className="flex items-end gap-2">
+          <textarea
+            rows={1}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={
-              sources.length === 0
-                ? 'Drop a file to start'
-                : 'Ask a question. Cite the line.'
-            }
-            disabled={sources.length === 0 || isStreaming}
+            onKeyDown={onComposerKeyDown}
+            placeholder={hasSources ? 'Ask anything about your sources' : 'Add a source to begin'}
+            disabled={!hasSources || isStreaming}
             aria-label="Ask a question"
-            className="flex-1 rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 h-9 text-sm text-[var(--color-fg)] focus:outline-none focus-visible:shadow-[var(--shadow-glow)] disabled:opacity-50"
+            className="flex-1 resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-3.5 py-2.5 text-sm leading-relaxed text-[var(--color-fg)] placeholder:text-[var(--color-fg-muted)]/70 focus:outline-none focus-visible:shadow-[var(--shadow-glow)] disabled:opacity-50 max-h-32"
           />
           <Button
             type="submit"
             variant="primary"
             size="sm"
-            disabled={sources.length === 0 || isStreaming || input.trim().length === 0}
+            aria-label="Send"
+            disabled={!canAsk || input.trim().length === 0}
+            className="h-10 shrink-0"
           >
             Send
           </Button>
@@ -412,12 +452,36 @@ export const ChatPanel: FC = () => {
   );
 };
 
-const EmptyState: FC = () => (
-  <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 py-12">
-    <p className="text-sm text-[var(--color-fg)]">Drop a file to start</p>
-    <p className="text-xs text-[var(--color-fg-muted)] max-w-xs">
-      Every answer cites the line. Every byte stays in this tab.
-    </p>
+const EmptyState: FC<{
+  hasSources: boolean;
+  suggestions: QuickAction[];
+  onPick: (prompt: string) => void;
+  disabled: boolean;
+}> = ({ hasSources, suggestions, onPick, disabled }) => (
+  <div className="flex-1 flex flex-col items-center justify-center text-center gap-4 py-10 animate-rise">
+    <div className="flex flex-col items-center gap-2">
+      <p className="font-serif text-lg text-[var(--color-fg)]">
+        {hasSources ? 'Ask anything' : 'Add a source to begin'}
+      </p>
+      <p className="text-xs text-[var(--color-fg-muted)] max-w-[16rem] leading-relaxed">
+        Every answer quotes your sources and links to the exact line. Nothing leaves this tab.
+      </p>
+    </div>
+    {hasSources && suggestions.length > 0 ? (
+      <div className="w-full max-w-xs flex flex-col gap-2 pt-1">
+        {suggestions.map((s) => (
+          <button
+            key={s.label}
+            type="button"
+            onClick={() => onPick(s.prompt)}
+            disabled={disabled}
+            className="text-left text-sm rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-2 text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:border-[var(--color-accent)]/40 disabled:opacity-50 transition-colors"
+          >
+            {s.label}
+          </button>
+        ))}
+      </div>
+    ) : null}
   </div>
 );
 

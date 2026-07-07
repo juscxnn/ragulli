@@ -209,7 +209,7 @@ test('chat answer cites trusted-zone sources when zone weights are applied', asy
 
   // Ask a question — the chat panel runs topK with zoneWeights and
   // composes an extractive answer.
-  const input = page.locator('input[aria-label="Ask a question"]');
+  const input = page.getByLabel('Ask a question');
   await expect(input).toBeEnabled({ timeout: 10_000 });
   await input.fill('which sources are most relevant?');
   await page.keyboard.press('Enter');

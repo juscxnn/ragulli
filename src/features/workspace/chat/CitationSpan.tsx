@@ -28,7 +28,8 @@ export const CitationSpan: FC<CitationSpanProps> = ({
     data-chunk-id={chunkId}
     data-source-id={sourceId}
     data-char-start={charStart}
-    className="underline decoration-[var(--color-accent)] decoration-dotted underline-offset-4 hover:decoration-solid hover:text-[var(--color-accent)] transition-colors"
+    title="Open the source at this line"
+    className="text-[var(--color-accent)] decoration-[var(--color-accent)]/50 decoration-dotted underline underline-offset-[3px] rounded-sm px-0.5 -mx-0.5 hover:bg-[var(--color-accent-soft)] hover:decoration-solid focus-visible:outline-none focus-visible:shadow-[var(--shadow-glow)] transition-colors"
   >
     {children ?? ''}
   </button>

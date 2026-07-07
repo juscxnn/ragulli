@@ -205,7 +205,7 @@ test('without a BYOK key, asking yields a local extractive answer or a clear fai
   // but the model call path should fail because the key is missing.
   // We trigger streamChat via a real DOM submit on the form, then
   // observe the chat panel's alert region.
-  const input = page.locator('input[aria-label="Ask a question"]');
+  const input = page.getByLabel('Ask a question');
   await expect(input).toBeEnabled({ timeout: 10_000 });
 
   await input.fill('summarize');
