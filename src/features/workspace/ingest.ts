@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Shared ingest controller. Every UI surface that accepts a file —
 // the Canvas drop target, the FirstDrop hero, and the ?sample= deep
 // link — routes through `ingestFiles` so the behavior is identical

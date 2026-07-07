@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // QuickActions — the 4 quick-action chips below the chat input. The
 // active workspace's template seeds the prompts; the ChatPanel
 // passes them in. Each chip submits its prompt directly to the chat

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Sliding-window chunker. We tokenize the input with a BERT WordPiece
 // tokenizer compatible with the embedding model (Xenova/all-MiniLM-L6-v2) and
 // then advance a window of (chunkSize - chunkOverlap) tokens over the

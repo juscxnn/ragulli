@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the sliding-window chunker. We mock the AutoTokenizer via
 // the test hook so the suite runs in milliseconds with no network.
 

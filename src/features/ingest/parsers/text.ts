@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Plain-text parser. Reads the file as UTF-8 and returns it verbatim.
 // No page model exists, so pageMap is empty.
 

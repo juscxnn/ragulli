@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Group-weighting E2E test. Spec §3 DoD:
 //   "Group 3 documents into a 'trusted' zone, 2 into a 'background'
 //    zone. Ask a question. The trusted-zone sources consistently

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // SourceCard — a single source card on the canvas. Carries the
 // filename, a type icon, byte size, chunk count, and the zone it
 // currently belongs to (badge in the corner). Click → opens the

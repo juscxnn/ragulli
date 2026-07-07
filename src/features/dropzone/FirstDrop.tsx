@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // FirstDrop — the Scene 1 hero. A real drop target, four big
 // icon-buttons (PDF, URL, TEXT, AUDIO-disabled) plus four
 // sample-file buttons. AUDIO is V1.5 per spec §1.5, so we render it

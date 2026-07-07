@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Four-second rule E2E test. The dropzone must become interactive
 // in under 4 seconds from `page.goto('/app/')`. We measure from
 // the navigation start to the moment the canvas dropzone renders

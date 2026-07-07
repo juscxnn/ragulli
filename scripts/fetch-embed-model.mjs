@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // fetch-embed-model.mjs — Download the self-hosted embedding model at
 // BUILD time so the deployed site serves it from its own origin. The
 // embed worker sets `env.allowRemoteModels = false` and

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Embedding Web Worker. We run Transformers.js off the main thread so
 // the model download + inference never blocks the UI. The worker is
 // lazily initialized on the first request and the pipeline is held in

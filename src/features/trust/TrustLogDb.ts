@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TrustLog persistence — a small, dedicated Dexie database that holds
 // the last 100 trust activities. It lives in its own database (rather
 // than adding a table to the main `ragulli` schema) so we do not

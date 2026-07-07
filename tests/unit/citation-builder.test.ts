@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the citation builder. Covers both numbered and inline
 // modes plus the edge cases the spec calls out: quotes spanning line
 // breaks, same quote appearing twice, overlapping matches.

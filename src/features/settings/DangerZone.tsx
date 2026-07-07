@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // DangerZone settings tab. The one big "Clear all my data" button
 // from spec §3 DoD. Hold-to-confirm for 1 second; on successful
 // release, wipe IndexedDB (Dexie), OPFS, localStorage (except
@@ -121,7 +121,7 @@ export const DangerZone: FC = () => {
   return (
     <div className="flex flex-col gap-4">
       <p className="text-sm text-[var(--color-fg-muted)]">
-        Wipes everything RAGülli has stored locally: every uploaded file in OPFS, every
+        Wipes everything RAGülli has stored locally: every uploaded file in OPFS, every
         indexed chunk in IndexedDB, every BYOK key, every chat. After the page reloads,
         this tab behaves like a fresh install.
       </p>

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // IngestDefaults settings tab. Sliders for chunk size (200..2000
 // tokens) and overlap (0..200 tokens, must be strictly less than
 // chunk size), a workspace template picker, and a "Reset to

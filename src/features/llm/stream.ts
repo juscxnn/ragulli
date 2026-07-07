@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Unified chat-stream interface. `streamChat` dispatches a `ChatRequest`
 // to the right provider module based on `req.provider`. Providers
 // live in `./providers/<id>.ts` and are registered statically in

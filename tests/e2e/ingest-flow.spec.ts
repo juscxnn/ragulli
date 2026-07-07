@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Ingest-flow E2E test. The full RAGülli ingest pipeline (parse +
+// Copyright (c) 2026 RAGülli contributors
+// Ingest-flow E2E test. The full RAGülli ingest pipeline (parse +
 // chunk + embed) is exercised by other suites (Subagent F); here
 // we focus on the UI + storage contract: dropping a sample file
 // onto the canvas surface must produce a Source row in IndexedDB

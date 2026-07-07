@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // In-browser LLM fallback provider. Uses `@mlc-ai/web-llm` to load a
 // quantized model into WebGPU and stream tokens from its callback.
 // We default to Phi-3.5-mini (q4f16) per spec §4.4 — the smallest

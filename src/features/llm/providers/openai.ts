@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // OpenAI streaming provider. Calls `https://api.openai.com/v1/chat/completions`
 // directly from the browser. CORS is permitted by OpenAI for this endpoint,
 // so we do not route through a proxy. We emit one `token` chunk per

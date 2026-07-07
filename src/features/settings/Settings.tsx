@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Settings — modal with four tabs. Subagent C owns the back-end and
 // the tabs; Subagent D polishes the styling and integration later.
 

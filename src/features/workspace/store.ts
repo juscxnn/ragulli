@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Workspace store. Single zustand store per feature area per spec
 // §4.1. Holds the in-memory mirrors of the IndexedDB rows the UI
 // needs to render: workspaces, sources, chunks (keyed by sourceId),

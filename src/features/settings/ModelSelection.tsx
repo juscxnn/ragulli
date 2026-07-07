@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // ModelSelection settings tab. One row per provider: a masked
 // password input (renders the key as dots regardless of length), a
 // "Test connection" button that fires a minimal request and shows

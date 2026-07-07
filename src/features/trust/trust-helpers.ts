@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Non-component helpers around the trust log. Kept in their own file
 // so the TrustPanel component file only exports components (and
 // HMR/Fast Refresh works cleanly).

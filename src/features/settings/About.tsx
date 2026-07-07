@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // About settings tab. Version (read from package.json), license,
 // GitHub link, the "no analytics, no telemetry" pledge, an
 // Advanced section that enumerates every outbound origin the CSP
@@ -72,7 +72,7 @@ export const About: FC = () => {
           The browser-only promise
         </h3>
         <p className="text-sm text-[var(--color-fg-muted)]">
-          RAGülli does not embed analytics, telemetry, tracking pixels, or third-party
+          RAGülli does not embed analytics, telemetry, tracking pixels, or third-party
           scripts. Every byte of your files stays in this tab. When you ask a question,
           only the question and your BYOK key leave the tab — and only over the network
           path you chose (direct to the frontier provider, or through a stateless Vercel

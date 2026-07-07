@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Shared types for the document parsers. Every parser returns the same
 // shape so the pipeline can dispatch on MIME type without conditional
 // result handling. `pageMap` records the character offsets of each

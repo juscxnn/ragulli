@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // MiniMax streaming provider. Uses the same OpenAI-compatible
 // `delta.content` SSE shape that the OpenAI/MiniMax/Moonshot family
 // emits. We share the SSE parser with OpenAI but point at MiniMax's

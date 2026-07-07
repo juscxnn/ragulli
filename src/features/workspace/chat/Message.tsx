@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Message — a single chat message. Renders text and citation segments
 // from a flat `RenderSegment[]` partition. The long-form prose of an
 // assistant answer uses the serif (Lora) stack per spec §8.2.

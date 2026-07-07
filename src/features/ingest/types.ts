@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Ingest pipeline types. The pipeline itself lives in pipeline.ts;
 // this file is the only place the rest of the app imports the option
 // and progress shapes, so changing the wire format is a single-file

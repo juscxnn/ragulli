@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // DOCX parser. We use mammoth's `extractRawText` which strips the
 // entire Word XML structure and yields plain text only. Page numbers
 // are not preserved (DOCX has no fixed page model — pagination is a

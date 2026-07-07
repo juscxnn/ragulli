@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the topK search. The embed worker is mocked to return
 // deterministic one-hot vectors over a small vocabulary, and the
 // Dexie store is replaced with an in-memory map, so the suite has

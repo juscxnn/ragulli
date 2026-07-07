@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // BYOK round-trip E2E test. Verifies the encrypted-at-rest BYOK
 // flow:
 //   1. Open Settings → Model, paste an OpenAI key, click "Save key".

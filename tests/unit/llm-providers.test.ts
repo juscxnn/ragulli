@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the BYOK providers. Each test mocks globalThis.fetch
 // with a streaming Response backed by a ReadableStream, then asserts
 // the chunk sequence the provider emitted is exactly what we expect.

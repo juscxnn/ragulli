@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the Vercel Edge function `api/anthropic.ts`. We import
 // the default export as a function `(req: Request) => Promise<Response>`
 // and mock globalThis.fetch so we never actually call Anthropic.

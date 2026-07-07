@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Real-pdf integration test. We polyfill `DOMMatrix` in tests/setup.ts
 // so pdfjs-dist v5 can load under jsdom, and we run pdfjs in
 // main-thread mode (workerSrc = ''). This is the same code path the

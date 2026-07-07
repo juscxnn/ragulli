@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Offline-ingest E2E test. Spec §3 DoD:
 //   "Disconnect the network. Drop another PDF. It still indexes.
 //    The answer-from-cache model works."
@@ -147,7 +147,6 @@ test('offline ingest still parses, chunks, and embeds the dropped file', async (
       message: 'embedded chunks must land without any cross-origin request',
     })
     .toBeGreaterThan(0);
-  const chunkCount = await readChunkCount();
 
   // The cross-origin request list MUST be empty: even with every
   // non-self origin blocked by the route handler, the ingest

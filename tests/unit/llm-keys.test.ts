@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the BYOK key storage. We verify:
 //   - setKey + getKey round-trip returns the plaintext
 //   - the localStorage value is NOT the plaintext (encryption works)

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Ingest pipeline. The single public entry point is `ingestFile`,
 // which turns a `File` into a stored Source + an array of embedded
 // Chunks in IndexedDB. The pipeline is sequential on the main

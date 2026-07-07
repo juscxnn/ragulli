@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Moonshot Kimi streaming provider. Kimi exposes an OpenAI-compatible
 // SSE endpoint at `https://api.moonshot.cn/v1/chat/completions`. We
 // use the same `delta.content` parser shape as OpenAI.

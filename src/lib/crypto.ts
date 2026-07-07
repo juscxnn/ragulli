@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // At-rest crypto helpers for BYOK keys. The design is "honest-at-rest
 // defense", not real secrecy:
 //

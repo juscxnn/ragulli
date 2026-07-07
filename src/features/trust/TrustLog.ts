@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TrustLog — in-memory mirror of the trust panel's history. The
 // store holds the last `MAX_ENTRIES` activities in memory and
 // persists the same set into a dedicated IndexedDB database

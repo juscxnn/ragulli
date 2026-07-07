@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the streamChat dispatcher. We mock every provider module
 // so the dispatcher selects them and we observe which one was called
 // and with what arguments.

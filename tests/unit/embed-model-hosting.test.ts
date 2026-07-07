@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Guardrail tests for the self-hosted embedding model. The launch
 // blocker these protect against: the embed worker silently reaching
 // out to huggingface.co (blocked by the production CSP) instead of

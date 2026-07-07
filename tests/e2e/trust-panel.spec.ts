@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Trust-panel E2E test. Verifies that dropping a sample file
 // produces a trust log entry the user can read in plain English,
 // and that every outbound request during the flow goes to either

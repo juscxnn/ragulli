@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Reducer-style unit tests for the workspace store. The store is a
 // plain zustand vanilla, so we can call actions imperatively and
 // read state back without React. Each test resets the store to a

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // LLM provider protocol. The wire shapes used by every provider in
 // `features/llm/providers/*` and the dispatcher in `stream.ts`. Kept in
 // a single file so Subagent D can import the full set without

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Citation-click E2E test. Seeds a Source + Chunk rows + a
 // citation-bearing assistant message via the workspace store
 // (exposed on window.__ragulli for E2E testability), then clicks

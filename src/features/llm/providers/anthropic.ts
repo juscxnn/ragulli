@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Anthropic provider. Anthropic's API does not CORS-permit direct
 // browser calls, so we forward through a stateless Vercel Edge
 // function. The Edge function (api/anthropic.ts) accepts the user's

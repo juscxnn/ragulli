@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Normalize RAGülli umlaut byte sequence to canonical combining diaeresis form.
+"""Normalize RAGülli umlaut byte sequence to canonical combining diaeresis form.
 
 Per spec §10.1, the umlaut on the u is U+0308 (combining diaeresis) — NOT
-the precomposed U+00FC (ü). The visible glyph is identical but the byte
+the precomposed U+00FC (ü). The visible glyph is identical but the byte
 sequence is canonical and stable across fonts.
 
-Replaces every `ü` (UTF-8: \xc3\xbc) with `u\u0308` (UTF-8: \x75\xcc\x88).
+Replaces every `ü` (UTF-8: \xc3\xbc) with `u\u0308` (UTF-8: \x75\xcc\x88).
 Operates on a whitelist of files/directories we own.
 """
 import os
@@ -20,10 +20,23 @@ ROOTS = [
     "privacy.html",
     "src/landing",
     "src/styles",
+    "src/features",
+    "src/lib",
+    "src/workers",
+    "src/components",
+    "src/routes",
+    "src",
     "scripts",
+    "tests",
+    "api",
+    "launch",
+    "SECURITY.md",
+    "LICENSE-AUDIT.md",
+    "README.md",
+    "NOTICE",
 ]
 
-EXTENSIONS = (".html", ".ts", ".tsx", ".css", ".mjs", ".json", ".md")
+EXTENSIONS = (".html", ".ts", ".tsx", ".css", ".mjs", ".json", ".md", ".py")
 
 def should_process(path: str) -> bool:
     if not path.endswith(EXTENSIONS):

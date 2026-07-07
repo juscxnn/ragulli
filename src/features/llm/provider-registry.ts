@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Provider registry. Each provider has a static descriptor: its
 // human-readable label, default model, whether it needs a key, and
 // whether it calls the network directly (true) or via an Edge

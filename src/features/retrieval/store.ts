@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Typed Dexie wrappers for sources, chunks, and zones. The Dexie
 // schema lives in src/lib/db.ts; this file is the only place the
 // rest of the app talks to the database. Each function is a thin

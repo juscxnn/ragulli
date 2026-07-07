@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Vitest global setup. Stubs the OPFS-backed navigator.storage.getDirectory
 // with an in-memory implementation so the opfs helpers and any feature
 // that writes to OPFS can run under jsdom. The stub mirrors the subset

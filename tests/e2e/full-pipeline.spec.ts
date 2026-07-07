@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Full-pipeline E2E: the moment of truth, end to end, with NO mocks
 // and NO keys. Exercises the REAL embedding path (self-hosted
 // all-MiniLM-L6-v2 + self-hosted ONNX Runtime WASM, both same-origin)

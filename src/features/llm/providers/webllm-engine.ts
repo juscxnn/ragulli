@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // WebLLM engine wrapper. The `@mlc-ai/web-llm` import is lazy and
 // happens only when `getWebLLMEngine` is actually called. Tests
 // `vi.mock` this entire module to avoid loading WebGPU.

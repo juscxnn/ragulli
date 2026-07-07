@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Compile-time check that the public API surface documented in
 // the Subagent B prompt is exported with the right names and
 // shapes. This file has no runtime tests; it only needs to

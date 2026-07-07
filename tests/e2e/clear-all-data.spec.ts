@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Clear-all-data E2E test. Verifies the "Clear all my data" hold-to-
 // confirm control in Settings → Danger zone wipes every IndexedDB
 // store, every OPFS entry, every localStorage key owned by
-// RAGülli, and the per-tab secret in sessionStorage. After the
+// RAGülli, and the per-tab secret in sessionStorage. After the
 // page reloads, the trust log must be empty and the workspace
 // store must be at its fresh-install state.
 //

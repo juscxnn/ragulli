@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Canvas — the spatial workspace where sources live as cards. Owns
 // the drag-drop wiring between zones (HTML5 native API) and exposes
 // the "Create zone" button per spec Scene 5. The whole canvas is a

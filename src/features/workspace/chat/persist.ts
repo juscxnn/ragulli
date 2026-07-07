@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Chat persistence. The workspace store is the render-side cache;
 // this module writes the thread to `db.chats` (one row per
 // workspace, deterministic id) so a reload can rehydrate the

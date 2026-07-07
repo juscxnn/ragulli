@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Message protocol for the embed worker. The main-thread wrapper and
 // the worker both import this so request and response shapes are
 // kept in lock-step.

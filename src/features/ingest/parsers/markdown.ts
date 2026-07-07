@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Minimal Markdown-to-plain-text renderer. The spec forbids adding
 // new dependencies without justification, and `marked` is not in
 // package.json. Markdown is a small, regular format; a few hundred

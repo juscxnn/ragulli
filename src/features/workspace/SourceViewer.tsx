@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // SourceViewer — a Dialog that renders the original file. PDFs use
 // pdfjs-dist to extract the text of every page and render it as a
 // scrollable text column with each page wrapped in a section that

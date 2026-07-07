@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Citation builder. Given the source chunks used as context, attach
 // citation markers to the assistant's streamed answer.
 //

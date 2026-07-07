@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // App — single-page shell. Topbar (logo + tagline + info + settings).
 // Three-column workspace below: sidebar (workspace switcher) · canvas
 // (sources + zones) · chat (questions + answers). The trust chip
@@ -275,8 +275,8 @@ const Topbar: FC<{ onOpenInfo: () => void; onOpenSettings: () => void }> = ({
 }) => (
   <header className="flex items-center justify-between px-6 h-14 border-b border-[var(--color-border)] shrink-0">
     <div className="flex items-center gap-3">
-      <img src={logoMark} alt="RAGülli" width={28} height={28} />
-      <span className="font-serif text-lg text-[var(--color-fg)]">RAGülli</span>
+      <img src={logoMark} alt="RAGülli" width={28} height={28} />
+      <span className="font-serif text-lg text-[var(--color-fg)]">RAGülli</span>
       <span className="hidden sm:inline text-xs text-[var(--color-fg-muted)] ml-2">
         Your files. Your AI. Your browser.
       </span>
@@ -285,7 +285,7 @@ const Topbar: FC<{ onOpenInfo: () => void; onOpenSettings: () => void }> = ({
       <Button
         variant="ghost"
         size="sm"
-        aria-label="What is RAGülli?"
+        aria-label="What is RAGülli?"
         leadingIcon={<InfoIcon size={16} />}
         onClick={onOpenInfo}
       >
@@ -308,13 +308,13 @@ const InfoDialog: FC<{ open: boolean; onClose: () => void }> = ({ open, onClose 
   <Dialog
     open={open}
     onClose={onClose}
-    title="RAGülli"
+    title="RAGülli"
     description="Your files. Your AI. Your browser."
     width="md"
   >
     <div className="flex flex-col gap-3 text-sm text-[var(--color-fg)]">
       <p>
-        RAGülli is a private reading companion that lives entirely in your browser. Drop a
+        RAGülli is a private reading companion that lives entirely in your browser. Drop a
         file, ask a question, get an answer with the line cited. Nothing leaves this tab
         unless you explicitly send a question to a frontier model with your own key.
       </p>

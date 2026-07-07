@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Extractive answers for the no-key path. When the active provider
 // needs a BYOK key and none is saved, we do not error out — we run
 // the same local retrieval and compose an honest, quoted answer from

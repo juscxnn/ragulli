@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // PDF parser. We use pdfjs-dist's text layer only — no canvas, no
 // rendering. For each page, we request the text content and join
 // the items into a single string, recording the (charStart, charEnd)

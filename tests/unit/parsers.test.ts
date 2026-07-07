@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tests for the document parsers. The PDF, DOCX, and URL parsers
 // depend on real libraries; we mock them here so the suite has no
 // network, no native worker, and runs in milliseconds. The text

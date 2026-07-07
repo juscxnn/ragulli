@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Pipeline integration test. We exercise `ingestFile` end-to-end
 // against a plain-text input (which works in jsdom) and skip the
 // PDF integration because pdfjs-dist v5 needs browser globals that

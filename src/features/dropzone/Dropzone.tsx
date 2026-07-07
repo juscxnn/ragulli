@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Dropzone — the inner drop zone primitive used inside the canvas.
 // Wraps the generic `ui/Dropzone` for files, but also exposes a
 // small URL / paste affordance because Spec Scene 1 lists URL and

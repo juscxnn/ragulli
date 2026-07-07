@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Cosine-similarity top-k search. Embeddings are L2-normalized at
 // the model layer (`pooling: 'mean', normalize: true`) so cosine
 // similarity reduces to a dot product. We do a single full scan of

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TemplatePicker — UI for the 6 starter templates. Picking one:
 //   1. Writes the workspace's `templateId` to the workspace row in
 //      IndexedDB.

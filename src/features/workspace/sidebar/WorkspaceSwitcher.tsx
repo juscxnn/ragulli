@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // WorkspaceSwitcher — left rail. Lists every workspace the user has
 // created and highlights the active one. "+ New" creates a fresh
 // workspace and immediately seeds the "general" zone so the canvas

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // ChatPanel — the right rail. Owns the question input, the streaming
 // chat, and the citation click→source-viewer navigation. Implements
 // spec Scenes 3 and 4:
@@ -230,7 +230,7 @@ export const ChatPanel: FC = () => {
       }
 
       const contextBlock = buildContextBlock(hits);
-      const sys = `${systemPrompt || 'You are RAGülli, a reading companion. Answer using ONLY the context below. Where appropriate, quote exact phrases from the context so the UI can attach a clickable citation to them. If the answer is not in the context, say so plainly.'}\n\nCONTEXT:\n${contextBlock}`;
+      const sys = `${systemPrompt || 'You are RAGülli, a reading companion. Answer using ONLY the context below. Where appropriate, quote exact phrases from the context so the UI can attach a clickable citation to them. If the answer is not in the context, say so plainly.'}\n\nCONTEXT:\n${contextBlock}`;
 
       const assistantMsg: ChatMessage = {
         id: uuidv4(),

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Main-thread wrapper around the embed worker. We lazily spawn the
 // worker on the first call to `embedBatch`, keep a single instance
 // alive for the lifetime of the page, and dispatch each batch as a

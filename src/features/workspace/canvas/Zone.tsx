@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Zone — a dashed-border container on the canvas that groups sources.
 // Spec Scene 5: soft dashed border, zone color glow, header with the
 // zone name (double-click to rename), a small delete button, a weight

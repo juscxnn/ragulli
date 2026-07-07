@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Tiny SSE (Server-Sent Events) parser built on top of the browser
 // `ReadableStream` API. The OpenAI-compatible providers (OpenAI,
 // MiniMax, Kimi, Anthropic-via-proxy) emit events in the

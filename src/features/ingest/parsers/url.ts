@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // URL parser. We fetch the URL, parse the response body as HTML, then
 // run Mozilla Readability to extract the article body. Readability
 // removes nav, ads, sidebars, etc. and returns a clean textContent.
