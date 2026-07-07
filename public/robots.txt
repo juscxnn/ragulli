@@ -1,0 +1,17 @@
+# robots.txt for RAGuelli (the umlaut is omitted from this comment
+# to avoid a non-ASCII byte in a config file that some crawlers
+# may parse strictly).
+#
+# We allow full indexing of the marketing site and the static
+# references (og-image, logo). We do NOT disallow the /app/ subtree
+# because the app shell is client-rendered and crawlers see the
+# empty body, but the /app/ pages are not a public surface we want
+# indexed (they assume the user has dropped files). Cloudflare Pages
+# serves this verbatim.
+
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /sample-files/
+
+Sitemap: https://ragulli.com/sitemap.xml

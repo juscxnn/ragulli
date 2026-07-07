@@ -11,9 +11,10 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "pnpm run build:assets && pnpm run build:app",
+    "build": "pnpm run build:assets && pnpm run build:app && pnpm run build:sitemap",
     "build:assets": "node scripts/build-og-image.mjs && node scripts/build-samples.mjs",
     "build:app": "tsc -b && vite build",
+    "build:sitemap": "node scripts/build-sitemap.mjs",
     "preview": "vite preview --port 4173",
     "lint": "eslint .",
     "format": "prettier --write .",
