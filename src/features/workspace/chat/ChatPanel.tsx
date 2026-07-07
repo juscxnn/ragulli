@@ -410,7 +410,7 @@ export const ChatPanel: FC = () => {
             </button>
           </div>
         ) : null}
-        {!noMessages && hasSources ? (
+        {actions.length > 0 ? (
           <div className="-mx-1 flex gap-1.5 overflow-x-auto pb-0.5 px-1 [scrollbar-width:none]">
             {actions.map((a) => (
               <button

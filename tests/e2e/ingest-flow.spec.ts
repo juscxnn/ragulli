@@ -7,7 +7,7 @@
 // with the right mime type and a non-empty OPFS pointer, even if
 // the embedding worker is still in flight.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 

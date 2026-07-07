@@ -9,7 +9,7 @@
 // This is the test that would have caught the launch blocker where
 // the CSP silently killed embedding on the deployed site.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 test('sample → real embed → no-key cited answer → citation opens viewer', async ({ page }) => {
   // The first model load fetches ~45 MB of same-origin files (ONNX

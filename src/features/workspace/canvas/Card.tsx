@@ -71,10 +71,10 @@ export const SourceCard: FC<SourceCardProps> = ({
       onDragEnd={onDragEnd}
       onClick={() => onOpen(source.id)}
       data-source-id={source.id}
-      className={`group w-full text-left rounded-md border bg-[var(--color-surface-2)] p-3 transition-all ${
+      className={`group w-full text-left rounded-xl border bg-[var(--color-surface-2)] p-3 transition-all ${
         isDragging
           ? 'opacity-40 border-dashed border-[var(--color-accent)]'
-          : 'border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:shadow-[var(--shadow-soft)]'
+          : 'border-[var(--color-border)] hover:border-[var(--color-accent)]/40 hover:bg-[var(--color-surface-3)] hover:shadow-[var(--shadow-card)] hover:-translate-y-px'
       }`}
       style={
         zoneColor
@@ -83,7 +83,7 @@ export const SourceCard: FC<SourceCardProps> = ({
       }
     >
       <div className="flex items-start gap-3">
-        <span className="text-[var(--color-accent)] mt-0.5 shrink-0">
+        <span className="shrink-0 inline-flex items-center justify-center h-9 w-9 rounded-lg bg-[var(--color-accent-soft)] text-[var(--color-accent)]">
           <Icon size={18} />
         </span>
         <div className="flex-1 min-w-0">

@@ -6,7 +6,7 @@
 // the rendered citation span and verifies the source viewer Dialog
 // opens with the right filename.
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('clicking a citation opens the source viewer dialog', async ({ page }) => {
   await page.goto('/app/');

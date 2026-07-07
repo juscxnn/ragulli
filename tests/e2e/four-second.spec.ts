@@ -5,7 +5,7 @@
 // the navigation start to the moment the canvas dropzone renders
 // its interactive text.
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('dropzone is interactive in under 4 seconds (four-second rule)', async ({ page }) => {
   test.setTimeout(30_000);

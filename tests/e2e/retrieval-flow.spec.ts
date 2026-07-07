@@ -10,7 +10,7 @@
 //      chat message in the store, the chat panel renders the
 //      citation as a clickable inline span.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 async function seedSourceChunks(
   page: Page,

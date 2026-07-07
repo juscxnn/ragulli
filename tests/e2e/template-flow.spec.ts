@@ -12,7 +12,7 @@
 // This proves the "Pick one of the 6 templates. The starting prompt
 // and ingest defaults change appropriately." spec DoD.
 
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 const TEMPLATE_ID = 'research-paper-reader';
 

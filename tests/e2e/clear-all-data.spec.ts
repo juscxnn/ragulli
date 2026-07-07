@@ -11,7 +11,7 @@
 //   "Click 'Clear all my data.' All IndexedDB and OPFS is gone.
 //    The next reload behaves like a fresh install."
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 const RAGULLI_DBS = ['ragulli', 'ragulli-trust-log'];
 
@@ -239,11 +239,16 @@ test('Danger zone clear-all wipes IndexedDB, OPFS, and reloads to fresh state', 
   // No app-owned localStorage keys remain (the only allowed one is
   // the version key prefix which DangerZone preserves; in V1 nothing
   // writes under that prefix, so the map is empty).
+  // DangerZone does clear `ragulli:onboarded:v1` along with every other
+  // app key, but the shared fixture re-adds it via an init script on the
+  // post-clear reload (it keeps the first-run onboarding modal from
+  // blocking UI in every spec). That key is test infrastructure, not app
+  // data, so exclude it here; every real app-owned key must still be gone.
   const remaining = await page.evaluate(() => {
     const out: string[] = [];
     for (let i = 0; i < localStorage.length; i += 1) {
       const k = localStorage.key(i);
-      if (k && k.startsWith('ragulli:')) out.push(k);
+      if (k && k.startsWith('ragulli:') && k !== 'ragulli:onboarded:v1') out.push(k);
     }
     return out;
   });

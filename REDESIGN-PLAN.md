@@ -124,16 +124,26 @@ Replace the fixed 3-column with a **responsive, scroll-contained shell**:
 
 ## Build order (priority)
 - [x] P0 Plan committed + pushed (this file)
-- [ ] P0 Design tokens + motion utilities in globals.css
-- [ ] P0 Responsive scroll-contained app shell (fixes the worst problem)
-- [ ] P1 Onboarding stepper
-- [ ] P1 Chat enhancement (composer, citations-as-pills, empty state)
-- [ ] P1 Canvas/source-card polish + zone UX
-- [ ] P2 Landing rhythm + mobile pass
+- [x] P0 Design tokens + motion utilities in globals.css
+- [x] P0 Responsive scroll-contained app shell (fixes the worst problem)
+- [x] P1 Onboarding stepper (3-step: welcome / add source / recap)
+- [x] P1 Chat enhancement (textarea composer, citations-as-pills,
+      suggested-question empty state, streaming indicator, source chips)
+- [x] P1 Canvas/source-card polish (icon tile, elevation) — zone UX
+      still uses the existing weight slider; a deeper zone pass is
+      optional follow-up.
+- [ ] P2 Landing rhythm + mobile pass (IN PROGRESS / next)
 - [ ] P2 Full verification: typecheck, lint, unit, e2e (keep selectors
       green — e2e depends on `[data-big-button]`, `[data-sample-id]`,
-      `input[aria-label="Ask a question"]`, `button[data-chunk-id]`,
-      `role="dialog"`, the trust-chip text, `data-testid="clear-all"`).
+      `getByLabel('Ask a question')` (now a textarea),
+      `button[data-chunk-id]`, `role="dialog"`, the trust-chip text,
+      `data-testid="clear-all"`).
+
+## Note on the e2e input selector change
+The chat composer became a `<textarea>` (Enter sends, Shift+Enter
+newline). Specs that used `input[aria-label="Ask a question"]` were
+switched to `getByLabel('Ask a question')` so they match the textarea.
+Do not revert to an `<input>` without updating those specs.
 
 ## Constraints (do not break)
 - Strict TS, Tailwind only, SPDX headers on new files.

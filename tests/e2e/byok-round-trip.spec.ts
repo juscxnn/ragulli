@@ -21,7 +21,7 @@
 // route intercepts every api.openai.com request and returns a fixed
 // completion. The plaintext never reaches the network.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 
 const PROVIDER_TAB = 'model';
 const TEST_KEY = 'sk-test-fake-key-for-round-trip';

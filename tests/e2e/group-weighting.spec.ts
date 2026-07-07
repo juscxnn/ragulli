@@ -12,7 +12,7 @@
 // weightByZone multiplier, and then assert that the top-K retrieval
 // returns the trusted-zone chunks first.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import type { TrustActivity } from '@/features/llm/types';
 
 async function seedFiveSources(page: Page): Promise<void> {

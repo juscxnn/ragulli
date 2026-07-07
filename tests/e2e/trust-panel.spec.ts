@@ -5,7 +5,7 @@
 // and that every outbound request during the flow goes to either
 // 'self' or one of the allow-listed hosts in the CSP.
 
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './fixtures';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
