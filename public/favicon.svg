@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-only
+  Copyright (c) 2026 RAGülli contributors
+  Favicon — same as the logo mark, smaller stroke. The favicon browser tab
+  is 16×16; the SVG renderer keeps proportions.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="RAGülli">
+  <rect width="32" height="32" rx="6" fill="#0B2027"/>
+  <g fill="none" stroke="#E0B158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 7 L7 25"/>
+    <line x1="14" y1="11" x2="25" y2="11"/>
+    <line x1="14" y1="16" x2="25" y2="16"/>
+    <line x1="14" y1="21" x2="22" y2="21"/>
+  </g>
+</svg>
