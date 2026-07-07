@@ -57,11 +57,9 @@ async function main() {
   if (!(await exists('logo-mark-maskable.png'))) {
     await writePng('logo-mark-maskable.png', await render(mark, 512, 512));
   }
-  // OG image — render the full lockup into a 1200×630 frame.
+  // OG image — render the dedicated 1200×630 composition.
   if (!(await exists('og-image.png'))) {
-    const ogSvg = full
-      .replace('viewBox="0 0 1024 256"', 'viewBox="0 0 1200 630" width="1200" height="630"')
-      .replace('<rect width="1024" height="256" fill="#0B2027"/>', '<rect width="1200" height="630" fill="#0B2027"/>');
+    const ogSvg = await readSvg('og-image.svg');
     await writePng('og-image.png', await render(ogSvg, 1200, 630));
   }
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-only
+  Copyright (c) 2026 RAGülli contributors
+
+  OG image composition (1200×630). Absolute positioning, no transforms,
+  so positions are exact. Mark on the left, wordmark on the right,
+  tagline below. Composition is roughly vertically centered.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="RAGülli — Your files. Your AI. Your browser.">
+  <rect width="1200" height="630" fill="#0B2027"/>
+
+  <!-- Mark, 256x256 area positioned in the upper-left of the lockup region -->
+  <g transform="translate(180 188) scale(0.5)">
+    <circle cx="194" cy="256" r="56" fill="#E0B158"/>
+    <circle cx="318" cy="256" r="56" fill="#E0B158"/>
+  </g>
+
+  <!-- Wordmark "RAGulli". Starts at x=480, baseline at y=370.
+       At 128pt with letter-spacing 4: "RAG" ends around x=480+260=740,
+       "u" spans approx x=744 to x=820, center ≈ x=782.
+       Diaeresis dots centered above u at (768, 282) and (796, 282). -->
+  <text x="480" y="370" font-family="Lora, 'Source Serif Pro', Georgia, serif"
+        font-weight="500" font-size="128" letter-spacing="4" fill="#F2EDE0">RAGulli</text>
+  <circle cx="812" cy="280" r="12" fill="#E0B158"/>
+  <circle cx="832" cy="280" r="12" fill="#E0B158"/>
+
+  <!-- Tagline, below the wordmark -->
+  <text x="480" y="412" font-family="Inter, system-ui, sans-serif"
+        font-size="20" letter-spacing="2" fill="#8FA396">Private RAG in your browser.</text>
+</svg>
