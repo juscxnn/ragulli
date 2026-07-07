@@ -8,7 +8,7 @@ import { Tabs, type TabItem } from './Tabs';
 const items: TabItem[] = [
   { id: 'summary', label: 'Summary', content: <p>3 sections. 4 figures. 1 acknowledged limitation.</p> },
   { id: 'quotes', label: 'Quotes', content: <p>Highlighted passages from the source.</p> },
-  { id: 'meta', label: 'Meta', content: <p>File: research-paper.pdf. 14 pages. Embedded with bge-small-en-v1.5.</p> },
+  { id: 'meta', label: 'Meta', content: <p>File: research-paper.pdf. 14 pages. Embedded with all-MiniLM-L6-v2.</p> },
 ];
 
 export const TabsStories: FC = () => {

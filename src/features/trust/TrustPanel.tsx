@@ -46,8 +46,8 @@ export const TrustPanel: FC = () => {
   }, [ingestProgress]);
 
   // Promote to active when a fresh trust-relevant entry lands in
-  // the log. Any file/chunk/embed/model-call/model-response entry
-  // counts as "something is happening now".
+  // the log. Any file/chunk/embed/model-download/model-call/
+  // model-response entry counts as "something is happening now".
   useEffect(() => {
     const last = entries[entries.length - 1];
     if (!last) return;
@@ -56,7 +56,8 @@ export const TrustPanel: FC = () => {
       last.kind !== 'model-response' &&
       last.kind !== 'file' &&
       last.kind !== 'chunk' &&
-      last.kind !== 'embed'
+      last.kind !== 'embed' &&
+      last.kind !== 'model-download'
     ) {
       return;
     }

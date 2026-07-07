@@ -2,8 +2,11 @@
 #
 # default-src 'self'
 #   Strict default: only same-origin resources are loaded by default.
-# script-src 'self'
-#   No inline scripts, no eval. Required for the trust-panel claim.
+# script-src 'self' 'wasm-unsafe-eval'
+#   No inline scripts, no JS eval. Required for the trust-panel claim.
+#   'wasm-unsafe-eval' permits WebAssembly compilation ONLY (it does
+#   not allow JS eval): the embedding model runs on the self-hosted
+#   ONNX Runtime WASM binary served from /models/ort/ on this origin.
 # style-src 'self' 'unsafe-inline'
 #   Same-origin stylesheets only. 'unsafe-inline' is permitted because
 #   React's runtime injects a small <style> block for SVG icons; the
@@ -19,6 +22,9 @@
 # connect-src 'self' https://api.openai.com https://api.anthropic.com
 #   https://generativelanguage.googleapis.com https://api.minimaxi.chat
 #   https://api.moonshot.cn https://ragulli-proxy.vercel.app
+#   https://huggingface.co https://cdn-lfs.huggingface.co
+#   https://*.huggingface.co https://*.hf.co
+#   https://raw.githubusercontent.com
 #   Outbound endpoints:
 #     api.openai.com                  — OpenAI / GPT family (BYOK)
 #     api.anthropic.com               — kept for direct calls; primary path
@@ -27,12 +33,28 @@
 #     api.minimaxi.chat                — MiniMax / M2 (BYOK)
 #     api.moonshot.cn                 — Moonshot / Kimi (BYOK)
 #     ragulli-proxy.vercel.app        — stateless Anthropic CORS proxy
+#     huggingface.co                  — transformers.js / WebLLM model
+#                                       weights download — not the user's
+#                                       files; only model weights
+#     cdn-lfs.huggingface.co          — transformers.js / WebLLM model
+#                                       weights download — not the user's
+#                                       files; only model weights
+#     *.huggingface.co                — same as above; WebLLM resolves
+#                                       weight shards via HF subdomains.
+#     *.hf.co                         — same as above; Hugging Face's CDN
+#                                       domain for large model files.
+#     raw.githubusercontent.com       — same as above; WebLLM fetches its
+#                                       public model manifest/config from
+#                                       GitHub. GET only, zero user data.
+#   The EMBEDDING model is NOT on this list on purpose: it is
+#   self-hosted under /models/ (fetched at build time by
+#   scripts/fetch-embed-model.mjs) and loads via connect-src 'self'.
 #   Adding a new endpoint here is a trust-panel violation per spec §4.5.
 # worker-src 'self' blob:
 #   Same-origin Web Workers plus blob: workers (used by PDF.js and
 #   Transformers.js to construct workers from in-memory bundles).
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.minimaxi.chat https://api.moonshot.cn https://ragulli-proxy.vercel.app; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.minimaxi.chat https://api.moonshot.cn https://ragulli-proxy.vercel.app https://huggingface.co https://cdn-lfs.huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; worker-src 'self' blob:
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin

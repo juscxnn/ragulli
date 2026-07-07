@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 RAGülli contributors
-// Sliding-window chunker. We tokenize the input with the same
-// tokenizer used by the embedding model (Xenova/bge-small-en-v1.5) and
+// Sliding-window chunker. We tokenize the input with a BERT WordPiece
+// tokenizer compatible with the embedding model (Xenova/all-MiniLM-L6-v2) and
 // then advance a window of (chunkSize - chunkOverlap) tokens over the
 // sequence. Each window is decoded back to a string and returned with
 // its true token count. Empty input returns an empty array; tiny
 // input returns a single chunk; very large input produces N chunks in
 // one pass (we never hold duplicate copies of the token array).
 
-import { AutoTokenizer, type PreTrainedTokenizer } from '@huggingface/transformers';
+import { AutoTokenizer, env, type PreTrainedTokenizer } from '@huggingface/transformers';
 
 export interface ChunkOptions {
   /** Maximum number of tokens per chunk. Must be > 0. */
@@ -22,18 +22,26 @@ export interface ChunkResult {
   tokenCount: number;
 }
 
-const TOKENIZER_NAME = 'Xenova/bge-small-en-v1.5';
+// The tokenizer is the same self-hosted model the embed worker uses
+// (see src/workers/embed.worker.ts), served from /models on our own
+// origin. Loading it never contacts a third-party origin.
+const TOKENIZER_NAME = 'Xenova/all-MiniLM-L6-v2';
 
 let cachedTokenizer: PreTrainedTokenizer | null = null;
 let tokenizerPromise: Promise<PreTrainedTokenizer> | null = null;
 
 /**
- * Lazily load and cache the BGE tokenizer. Subsequent calls return the
- * same instance so the model is downloaded only once per tab.
+ * Lazily load and cache the tokenizer. Subsequent calls return the
+ * same instance so the files are fetched only once per tab.
  */
 export async function getTokenizer(): Promise<PreTrainedTokenizer> {
   if (cachedTokenizer) return cachedTokenizer;
   if (!tokenizerPromise) {
+    // Same-origin only, mirroring the embed worker: `allowLocalModels`
+    // defaults to false in browser builds and must be flipped on.
+    env.allowLocalModels = true;
+    env.allowRemoteModels = false;
+    env.localModelPath = '/models';
     tokenizerPromise = AutoTokenizer.from_pretrained(TOKENIZER_NAME).then((tok) => {
       cachedTokenizer = tok;
       return tok;

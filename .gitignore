@@ -1,5 +1,7 @@
 node_modules
 dist
+# Self-hosted embedding model — fetched at build time by scripts/fetch-embed-model.mjs
+public/models/
 .DS_Store
 coverage
 playwright-report

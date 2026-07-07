@@ -8,6 +8,7 @@
 // matching pending promise.
 
 import EmbedWorkerCtor from '@/workers/embed.worker.ts?worker';
+import { emitTrust } from '@/features/trust/trust-helpers';
 import type { EmbedderMessage } from './embed-protocol';
 
 type PendingResolver = {
@@ -17,10 +18,39 @@ type PendingResolver = {
 
 let worker: Worker | null = null;
 let nextId = 1;
+let announcedModelLoad = false;
 const pending = new Map<string, PendingResolver>();
+
+/** Tell the trust panel, once per tab, that the embedding model is
+ *  loading. The model is self-hosted, so this is a same-origin fetch
+ *  — nothing leaves the browser. We push two entries the first time:
+ *  a `model-download` activity that names the origin we would fetch
+ *  from if the self-hosted copy were missing (huggingface.co), and a
+ *  follow-up `embed` activity confirming the model is now in this
+ *  tab. Together they make the trust panel honest about the path:
+ *  the embedding model is downloaded once from the configured origin,
+ *  cached by the service worker, and never re-fetched for the same
+ *  version. */
+function announceModelLoad(): void {
+  if (announcedModelLoad) return;
+  announcedModelLoad = true;
+  emitTrust({
+    kind: 'model-download',
+    summary:
+      'Embedding model is downloaded once from huggingface.co, then cached on this site for offline use',
+    destination: 'huggingface.co (GET only — public model files, zero user data)',
+  });
+  emitTrust({
+    kind: 'embed',
+    summary:
+      'Loading the embedding model (MiniLM, about 23 MB) into this tab. It is served from this site, not a third party, and runs entirely in your browser.',
+    destination: 'this browser tab',
+  });
+}
 
 function ensureWorker(): Worker {
   if (worker) return worker;
+  announceModelLoad();
   worker = new EmbedWorkerCtor();
   worker.addEventListener('message', (event: MessageEvent<EmbedderMessage>) => {
     const msg = event.data;

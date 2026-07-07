@@ -26,11 +26,25 @@
 //   - api.minimaxi.chat                : BYOK direct call (MiniMax / M2)
 //   - api.moonshot.cn                 : BYOK direct call (Moonshot / Kimi)
 //   - ragulli-proxy.vercel.app        : stateless Vercel Edge function for Anthropic CORS only
-// Hugging Face model downloads (transformers.js) load WASM/cache from
-// 'self' and the model is fetched once from huggingface.co under the
-// user's explicit click. That entry is intentionally NOT in
-// connect-src; downloads happen via the user opening the model in a
-// new tab. (Documented here per spec §4.5.)
+//   - huggingface.co                  : OPTIONAL transformers.js / WebLLM
+//                                       model weights download — not the
+//                                       user's files; only model weights
+//   - cdn-lfs.huggingface.co          : OPTIONAL transformers.js / WebLLM
+//                                       model weights download — not the
+//                                       user's files; only model weights
+//   - *.huggingface.co / *.hf.co      : OPTIONAL transformers.js / WebLLM
+//                                       model weights download — not the
+//                                       user's files; only model weights
+//   - raw.githubusercontent.com       : OPTIONAL WebLLM model manifest
+//                                       download — not the user's files
+// The EMBEDDING model (Xenova/all-MiniLM-L6-v2) is self-hosted:
+// scripts/fetch-embed-model.mjs downloads it at build time into
+// public/models/, and the embed worker sets allowRemoteModels = false
+// so every runtime model request is a same-origin fetch covered by
+// connect-src 'self'. The Hugging Face / GitHub origins above exist
+// solely for the opt-in in-browser WebLLM model, whose multi-GB
+// weights cannot be self-hosted; those origins receive GET requests
+// for public model files and never any user data. (Spec §4.5.)
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -98,7 +112,12 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff,woff2}'],
+        // 'mjs' matters: the PDF.js worker and the ONNX Runtime loader
+        // are .mjs assets — without them precached, offline ingest
+        // dies at parse (spec principle 7 / DoD offline check). The
+        // big binaries (.onnx, .wasm) stay OUT of the precache and are
+        // runtime-cached on first use instead.
+        globPatterns: ['**/*.{js,mjs,css,html,svg,png,ico,webp,woff,woff2}'],
         // The webllm chunk is ~6 MB (WebLLM is a model-loader library, not a
         // model itself; this is the runtime code only — model weights are
         // downloaded separately). The default 2 MiB precache cap silently
@@ -117,6 +136,23 @@ export default defineConfig({
               expiration: {
                 maxEntries: 32,
                 maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+            },
+          },
+          {
+            // Self-hosted embedding model (/models/**). The ~23 MB
+            // .onnx is far too big for the precache manifest (and the
+            // globPatterns above deliberately do not match .onnx or
+            // the model's .json files), so we cache it at runtime
+            // instead: CacheFirst with a long lifetime makes the app
+            // work fully offline after the first load (principle 7).
+            urlPattern: ({ url }) => url.pathname.startsWith('/models/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'ragulli-embed-model',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
             },
           },
@@ -141,11 +177,11 @@ export default defineConfig({
       // dev/preview server uses this mirror so we can verify the header locally.
       'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self'",
+        "script-src 'self' 'wasm-unsafe-eval'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob:",
         "font-src 'self' data:",
-        "connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.minimaxi.chat https://api.moonshot.cn https://ragulli-proxy.vercel.app",
+        "connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.minimaxi.chat https://api.moonshot.cn https://ragulli-proxy.vercel.app https://huggingface.co https://cdn-lfs.huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com",
         "worker-src 'self' blob:",
       ].join('; '),
     },

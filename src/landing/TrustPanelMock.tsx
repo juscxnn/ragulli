@@ -42,7 +42,7 @@ export const TrustPanelMock: FC = () => (
             </p>
             <p>
               <span className="text-[var(--color-fg)]">·</span> embedded&nbsp;&nbsp;local browser
-              (bge-small)
+              (MiniLM)
             </p>
             <p>
               <span className="text-[var(--color-fg)]">·</span> sent to&nbsp;&nbsp;

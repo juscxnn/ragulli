@@ -12,7 +12,8 @@
   "scripts": {
     "dev": "vite",
     "build": "pnpm run build:assets && pnpm run build:app && pnpm run build:sitemap",
-    "build:assets": "node scripts/build-og-image.mjs && node scripts/build-samples.mjs",
+    "build:assets": "node scripts/fetch-embed-model.mjs && node scripts/build-og-image.mjs && node scripts/build-samples.mjs",
+    "fetch:model": "node scripts/fetch-embed-model.mjs",
     "build:app": "tsc -b && vite build",
     "build:sitemap": "node scripts/build-sitemap.mjs",
     "preview": "vite preview --port 4173",
