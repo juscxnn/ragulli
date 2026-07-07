@@ -21,7 +21,7 @@ RAGülli is a browser-only private RAG tool. Drop a PDF, a DOCX, a Markdown fil
 ## How it works
 
 1. **Drop a file.** PDF, DOCX, Markdown, plain text, or URL.
-2. **Indexed locally.** The file is parsed with PDF.js / Mammoth / Readability, chunked with a sliding window, and embedded with a local embedding model in a Web Worker.
+2. **Indexed locally.** The file is parsed with PDF.js / Mammoth / Readability, chunked with a sliding window, and embedded with a local embedding model (all-MiniLM-L6-v2 via Transformers.js, served from this origin — no third-party download) in a Web Worker.
 3. **Ask a question.** The question is embedded against the same model. The top-k chunks are retrieved with cosine similarity, weighted by the group they live in.
 4. **Get an answer with citations.** The model streams an answer. Each claim carries a clickable span that opens the original file at the cited offset.
 
@@ -29,13 +29,16 @@ RAGülli is a browser-only private RAG tool. Drop a PDF, a DOCX, a Markdown fil
 
 ```bash
 pnpm install
+pnpm fetch:model  # one-time: downloads the self-hosted embedding model into public/models/
 pnpm dev          # starts the Vite dev server on http://localhost:5173
 pnpm typecheck    # tsc --noEmit
 pnpm lint         # eslint .
 pnpm test         # vitest run
-pnpm build        # builds the static site and writes it to ./dist
+pnpm build        # builds the static site and writes it to ./dist (runs fetch:model itself)
 pnpm preview      # serves ./dist on http://localhost:4173
 ```
+
+The embedding model (~23 MB) is not committed to the repo; `pnpm fetch:model` fetches it once from Hugging Face at build time and it is then served from your own origin. Skipping it makes local embedding fail with a 404.
 
 ## How to deploy
 
@@ -47,9 +50,39 @@ pnpm build
 
 The deployment target is Cloudflare Pages. The static `_headers` and `_redirects` files in `public/` set the Content-Security-Policy and the SPA fallback.
 
+## How to add a starter template
+
+Templates are plain data. They live in [`src/features/templates/templates.json`](./src/features/templates/templates.json), and adding one is a single PR: append an object to the array and open the pull request.
+
+The shape:
+
+```jsonc
+{
+  "id": "meeting-notes",              // unique kebab-case identifier
+  "name": "Meeting notes",            // shown on the template card
+  "icon": "mic",                      // icon key from the template icon set
+  "description": "One sentence saying what this template is for.",
+  "ingestDefaults": {
+    "chunkSize": 600,                 // tokens per chunk
+    "chunkOverlap": 80,               // tokens of sliding-window overlap
+    "ocr": false                      // reserved; OCR ships in V1.5
+  },
+  "defaultPrompt": "The system prompt the model starts with.",
+  "quickActions": [
+    { "label": "Summarize", "prompt": "The prompt this button sends." }
+  ]
+}
+```
+
+Keep the description to one sentence and the quick actions to four or fewer. Match the copy voice of the existing six templates: confident, warm, no emoji, no exclamation marks.
+
+## Security and privacy audit
+
+The privacy claim is enforced by the Content-Security-Policy header, not by policy text. The audit — dependency vulnerability scan, license inventory, a line-by-line review of the `connect-src` allowlist, and the manual verification steps (DevTools Network tab open while dropping a file) — is recorded in [docs/security-audit.md](./docs/security-audit.md).
+
 ## AGPL-3.0
 
-RAGülli is free software. It is licensed under the [GNU Affero General Public License v3.0](./LICENSE). If you fork it and run a modified version as a network service, you must publish your modifications.
+RAGülli is free software. It is licensed under the [GNU Affero General Public License v3.0](./LICENSE). If you fork it and run a modified version as a network service, you must publish your modifications. See [NOTICE](./NOTICE) for the copyright notice and third-party license summary.
 
 [![AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](./LICENSE)
 
