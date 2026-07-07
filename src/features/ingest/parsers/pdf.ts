@@ -9,24 +9,25 @@
 // warning in `meta` so the trust panel can show the limitation.
 
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist';
+// `?url` is a Vite-only suffix that resolves at build time. We
+// import the worker as a URL via Vite's `?url` query, which gives
+// us the final hashed asset path in the production bundle. We use
+// `?worker&url` for the worker-construction path, but since pdfjs
+// just needs the URL string, `?url` alone is sufficient.
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import type { ParseResult } from './types';
 
-const PDFJS_WORKER_URL = 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+const PDFJS_WORKER_URL: string = pdfWorkerUrl;
 
 type PdfTextItem = { str: string; hasEOL?: boolean };
 
 let workerSrcSet = false;
-async function ensureWorker(): Promise<void> {
+function ensureWorker(): void {
   if (workerSrcSet) return;
-  try {
-    const url = (await import(/* @vite-ignore */ PDFJS_WORKER_URL)).default as string;
-    GlobalWorkerOptions.workerSrc = url;
-  } catch {
-    // No worker available (e.g. test environment without Vite's
-    // bundler). pdfjs-dist falls back to running on the main thread
-    // when workerSrc is empty. That is slower but correct.
-    GlobalWorkerOptions.workerSrc = '';
-  }
+  // The worker URL is resolved at build time via Vite's `?url`
+  // suffix. We do not need a dynamic import — pdfjs will fetch the
+  // worker on first getDocument() call.
+  GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
   workerSrcSet = true;
 }
 
@@ -43,7 +44,7 @@ function joinTextItems(items: ReadonlyArray<unknown>): string {
 }
 
 export async function parsePdf(file: File | Blob): Promise<ParseResult> {
-  await ensureWorker();
+  ensureWorker();
   const data = new Uint8Array(await file.arrayBuffer());
   const doc = await getDocument({ data }).promise;
   const pageMap: ParseResult['pageMap'] = [];

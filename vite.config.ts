@@ -144,7 +144,7 @@ export default defineConfig({
         "script-src 'self'",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: blob:",
-        "font-src 'self'",
+        "font-src 'self' data:",
         "connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.minimaxi.chat https://api.moonshot.cn https://ragulli-proxy.vercel.app",
         "worker-src 'self' blob:",
       ].join('; '),

@@ -138,10 +138,29 @@ export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
           summary: `Ingesting ${file.name}`,
           destination: 'this browser tab (parser + embed worker)',
         });
+        // Optimistically surface a card before the embed worker
+        // finishes, so the canvas feels responsive and the user
+        // can move the card into a zone while embed churns.
+        const optimisticId = uuidv4();
+        addSourceCard(
+          {
+            id: optimisticId,
+            workspaceId,
+            filename: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            byteSize: file.size,
+            addedAt: Date.now(),
+            originOpfsPath: '',
+            parserVersion: 'v1',
+            meta: {},
+          },
+          0,
+        );
         try {
           const ingestOpts = loadIngestOpts(workspaceId);
           const onProgress = makeProgressHandler(file.name, setIngestProgress);
           const result = await ingestFile(file, ingestOpts, onProgress);
+          // Replace the optimistic card with the canonical Source row.
           const source = await getSource(result.sourceId);
           const chunks = await getChunksForSource(result.sourceId);
           if (source) addSourceCard(source, chunks.length);
