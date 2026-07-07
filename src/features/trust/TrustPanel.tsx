@@ -45,11 +45,21 @@ export const TrustPanel: FC = () => {
     return undefined;
   }, [ingestProgress]);
 
-  // Promote to active when a fresh model-call lands in the log.
+  // Promote to active when a fresh trust-relevant entry lands in
+  // the log. Any file/chunk/embed/model-call/model-response entry
+  // counts as "something is happening now".
   useEffect(() => {
     const last = entries[entries.length - 1];
     if (!last) return;
-    if (last.kind !== 'model-call' && last.kind !== 'model-response') return;
+    if (
+      last.kind !== 'model-call' &&
+      last.kind !== 'model-response' &&
+      last.kind !== 'file' &&
+      last.kind !== 'chunk' &&
+      last.kind !== 'embed'
+    ) {
+      return;
+    }
     setMode((m) => (m === 'pinned' ? m : 'active'));
     const handle = window.setTimeout(() => {
       setMode((m) => (m === 'pinned' ? m : 'compact'));
