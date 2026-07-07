@@ -45,6 +45,7 @@ async function* genTokens(...text: string[]): AsyncIterable<StreamChunk> {
   for (const t of text) yield { type: 'token', text: t };
   yield { type: 'done' };
 }
+void genTokens;
 
 vi.mock('@/features/llm/providers/openai', () => ({
   stream: (...args: unknown[]) => {

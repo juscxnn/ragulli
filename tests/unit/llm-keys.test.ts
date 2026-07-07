@@ -11,7 +11,7 @@
 // We reset the crypto module's cache between tests by calling
 // _resetForTests() from lib/crypto.ts.
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   _resetForTests as resetCryptoCache,
   decryptSecret,

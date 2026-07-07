@@ -99,6 +99,13 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff,woff2}'],
+        // The webllm chunk is ~6 MB (WebLLM is a model-loader library, not a
+        // model itself; this is the runtime code only — model weights are
+        // downloaded separately). The default 2 MiB precache cap silently
+        // excludes it; bump the cap so the in-browser provider is
+        // available offline. Cap is 16 MiB to leave headroom for future
+        // heavy chunks.
+        maximumFileSizeToCacheInBytes: 16 * 1024 * 1024,
         navigateFallback: '/app/index.html',
         navigateFallbackDenylist: [/^\/api/, /^\/t\//, /^\/compare\//, /^\/privacy/],
         runtimeCaching: [

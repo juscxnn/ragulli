@@ -5,10 +5,7 @@
 // a single file so Subagent D can import the full set without
 // reaching into per-provider modules.
 
-import type {
-  ChatMessage as _ChatMessage,
-  TrustActivity as _TrustActivity,
-} from '@/features/retrieval/types';
+import type { ChatMessage, TrustActivity } from '@/features/retrieval/types';
 
 export type ProviderId = 'openai' | 'anthropic' | 'google' | 'minimax' | 'kimi' | 'webllm';
 
@@ -41,7 +38,7 @@ export interface StreamOptions {
  * panel is the consumer.
  */
 export type StreamChunk =
-  | { type: 'token'; text: string }
+  | { type: 'token'; text: string; meta?: Record<string, unknown> }
   | { type: 'done'; meta?: Record<string, unknown> }
   | { type: 'error'; message: string; meta?: Record<string, unknown> };
 
@@ -54,10 +51,10 @@ export type StreamChunk =
 export interface ChatRequest {
   provider: ProviderId;
   model: string;
-  messages: _ChatMessage[];
+  messages: ChatMessage[];
   apiKey: string;
   signal?: AbortSignal;
-  onTrust?: (e: _TrustActivity) => void;
+  onTrust?: (e: TrustActivity) => void;
 }
 
 /**
@@ -77,7 +74,3 @@ export interface GeminiStreamChunk {
     content?: { parts?: Array<{ text?: string }> };
   }>;
 }
-
-// Reference imports keep the linter from complaining about unused
-// symbols while still surfacing the canonical chat/trust types.
-export type _Retained = _ChatMessage | _TrustActivity;

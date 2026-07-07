@@ -34,7 +34,7 @@ interface AnthropicProxyBody {
 }
 
 interface AnthropicSSEEvent {
-  type: 'message_start' | 'content_block_start' | 'content_block_delta' | 'content_block_stop' | 'message_delta' | 'message_stop' | 'ping';
+  type?: string;
   delta?: { type?: string; text?: string };
   content_block?: { type?: string; text?: string };
   error?: { type?: string; message?: string };
