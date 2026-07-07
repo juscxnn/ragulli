@@ -57,7 +57,7 @@ export const WorkspaceSwitcher: FC = () => {
   }, [workspaces.length, addWorkspace, setActive, setActiveWorkspace]);
 
   return (
-    <aside className="h-full p-3 border-r border-[var(--color-border)] bg-[var(--color-surface-1)] flex flex-col gap-3">
+    <aside className="h-full p-3 pb-20 border-r border-[var(--color-border)] bg-[var(--color-surface-1)] flex flex-col gap-3">
       <h2 className="text-[10px] uppercase tracking-wide text-[var(--color-fg-muted)] px-1">
         Workspaces
       </h2>
