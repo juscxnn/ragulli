@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // ComparePage — the per-competitor comparison page. One component,
 // used by all three /compare/{id}.html entries; the competitor id
 // is passed in as a prop from LandingApp's router.
 //
 // Sections:
-//   - Hero (RAGülli vs {Competitor} + tagline)
+//   - Hero (RAGülli vs {Competitor} + tagline)
 //   - "Where they're better" — honest, one paragraph.
-//   - "Where RAGülli is better" — three bullets.
+//   - "Where RAGülli is better" — three bullets.
 //   - Side-by-side comparison grid (the 7 rows).
-//   - "Switch to RAGülli" CTA -> /app/
+//   - "Switch to RAGülli" CTA -> /app/
 
 import type { FC } from 'react';
 import { PageShell } from '../PageShell';
@@ -59,7 +59,7 @@ export const ComparePage: FC<Props> = ({ competitorId }) => {
               Comparison
             </p>
             <h1 className="font-serif font-medium text-4xl md:text-5xl text-[var(--color-fg)] leading-tight tracking-tight">
-              RAGülli vs {c.name}
+              RAGülli vs {c.name}
             </h1>
             <p className="mt-4 text-lg md:text-xl text-[var(--color-fg-muted)] leading-relaxed">
               {c.tagline}
@@ -77,7 +77,7 @@ export const ComparePage: FC<Props> = ({ competitorId }) => {
             </div>
             <div className="rounded-lg border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/5 p-6">
               <h2 className="font-serif text-xl text-[var(--color-fg)] mb-3">
-                Where RAGülli is better
+                Where RAGülli is better
               </h2>
               <ul className="space-y-2.5">
                 {c.ragulliBetter.map((b) => (
@@ -110,7 +110,7 @@ export const ComparePage: FC<Props> = ({ competitorId }) => {
                       scope="col"
                       className="text-left py-3 px-4 font-serif text-base text-[var(--color-accent)] w-[36%]"
                     >
-                      RAGülli
+                      RAGülli
                     </th>
                     <th
                       scope="col"
@@ -154,7 +154,7 @@ export const ComparePage: FC<Props> = ({ competitorId }) => {
               href="/app/"
               className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg bg-[var(--color-accent)] text-[var(--color-bg)] font-medium text-base hover:brightness-110 hover:no-underline transition-[filter]"
             >
-              Switch to RAGülli
+              Switch to RAGülli
               <ArrowRightIcon size={16} />
             </a>
             <a

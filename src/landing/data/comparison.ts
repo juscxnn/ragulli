@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // Comparison data — the same 7-row comparison as
 // ComparisonTable.tsx, but expanded with "where they're better" and
-// "where RAGülli is better" callouts per competitor.
+// "where RAGülli is better" callouts per competitor.
 
 export type CompetitorId = 'notebooklm' | 'humata' | 'chatpdf';
 
@@ -11,7 +11,7 @@ export type Competitor = {
   name: string;
   tagline: string;
   betterAt: string;
-  /** Three bullets explaining where RAGülli wins. */
+  /** Three bullets explaining where RAGülli wins. */
   ragulliBetter: string[];
   rows: ComparisonRow[];
 };

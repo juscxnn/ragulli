@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // PrivacyPage — the /privacy page. Plain prose, the six statements
 // from spec §9 / §4.6 in their canonical order.
 
@@ -10,15 +10,15 @@ import { ShieldIcon } from '../icons';
 const POINTS: { heading: string; body: string }[] = [
   {
     heading: 'No analytics',
-    body: 'RAGülli does not collect analytics. There is no event tracker, no page-view beacon, no funnel, no A/B test, no crash reporter. The app does not know who you are, and it does not try to find out.',
+    body: 'RAGülli does not collect analytics. There is no event tracker, no page-view beacon, no funnel, no A/B test, no crash reporter. The app does not know who you are, and it does not try to find out.',
   },
   {
     heading: 'No telemetry',
-    body: 'RAGülli does not send telemetry. Every byte that leaves the browser is a byte you explicitly chose to send — a question to your chosen LLM, or a static asset request.',
+    body: 'RAGülli does not send telemetry. Every byte that leaves the browser is a byte you explicitly chose to send — a question to your chosen LLM, or a static asset request.',
   },
   {
     heading: 'No third-party scripts',
-    body: 'RAGülli does not run any third-party scripts. No analytics SDK, no chat widget, no font CDN, no A/B testing library. The strict Content-Security-Policy header reflects this; if you find an entry in connect-src that is not your chosen LLM endpoint, that is a bug.',
+    body: 'RAGülli does not run any third-party scripts. No analytics SDK, no chat widget, no font CDN, no A/B testing library. The strict Content-Security-Policy header reflects this; if you find an entry in connect-src that is not your chosen LLM endpoint, that is a bug.',
   },
   {
     heading: 'Your files never leave the browser',
@@ -30,7 +30,7 @@ const POINTS: { heading: string; body: string }[] = [
   },
   {
     heading: 'Open source, AGPL-3.0',
-    body: 'RAGülli is licensed under AGPL-3.0. The source code is at github.com/juscxnn/ragulli. You can read it, run it yourself, modify it, and self-host it. If you change it and offer it as a service, the AGPL requires you to publish your changes.',
+    body: 'RAGülli is licensed under AGPL-3.0. The source code is at github.com/juscxnn/ragulli. You can read it, run it yourself, modify it, and self-host it. If you change it and offer it as a service, the AGPL requires you to publish your changes.',
   },
 ];
 
@@ -46,7 +46,7 @@ export const PrivacyPage: FC = () => (
             Privacy.
           </h1>
           <p className="mt-4 text-lg text-[var(--color-fg-muted)] leading-relaxed">
-            The shortest possible version: RAGülli does not collect,
+            The shortest possible version: RAGülli does not collect,
             send, or know anything about you that you did not choose
             to tell it. The rest of this page is the long version.
           </p>

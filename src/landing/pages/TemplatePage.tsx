@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // TemplatePage — the per-template marketing page. One component,
 // used by all six /t/{id}.html entries; the template id is passed
 // in as a prop from LandingApp's router.
@@ -10,7 +10,7 @@
 //     defaultPrompt, in our own voice)
 //   - Three example questions (first three of the template's
 //     quickActions)
-//   - "Open in RAGülli" CTA -> /app/?template={id}
+//   - "Open in RAGülli" CTA -> /app/?template={id}
 //   - "← Back to all templates" link -> /
 
 import type { FC } from 'react';
@@ -156,7 +156,7 @@ export const TemplatePage: FC<Props> = ({ templateId }) => {
               href={`/app/?template=${t.id}`}
               className="inline-flex items-center justify-center gap-2 h-12 px-6 rounded-lg bg-[var(--color-accent)] text-[var(--color-bg)] font-medium text-base hover:brightness-110 hover:no-underline transition-[filter]"
             >
-              Open in RAGülli
+              Open in RAGülli
               <ArrowRightIcon size={16} />
             </a>
             <a

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // build-sitemap.mjs — Generate dist/sitemap.xml at build time.
 // Lists every route the landing site serves: /, the six /t/{id}
 // pages, the three /compare/{id} pages, and /privacy.

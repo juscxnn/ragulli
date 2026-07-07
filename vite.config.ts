@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Vite configuration for the RAGülli project.
+// Copyright (c) 2026 RAGülli contributors
+// Vite configuration for the RAGülli project.
 //
 // The build produces TWO static sites from one Vite invocation:
 //   - Landing site at /, /t/{id}, /compare/{id}, /privacy
@@ -68,8 +68,8 @@ export default defineConfig({
       // SW registration call because main.tsx does not call registerSW.
       includeAssets: ['favicon.svg', 'favicon.ico', 'logo-mark.svg', 'logo-full.svg', 'og-image.png'],
       manifest: {
-        name: 'RAGülli',
-        short_name: 'RAGülli',
+        name: 'RAGülli',
+        short_name: 'RAGülli',
         description: 'Your files. Your AI. Your browser.',
         theme_color: '#0B2027',
         background_color: '#0B2027',
