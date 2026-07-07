@@ -132,12 +132,27 @@ Replace the fixed 3-column with a **responsive, scroll-contained shell**:
 - [x] P1 Canvas/source-card polish (icon tile, elevation) — zone UX
       still uses the existing weight slider; a deeper zone pass is
       optional follow-up.
-- [ ] P2 Landing rhythm + mobile pass (IN PROGRESS / next)
-- [ ] P2 Full verification: typecheck, lint, unit, e2e (keep selectors
-      green — e2e depends on `[data-big-button]`, `[data-sample-id]`,
-      `getByLabel('Ask a question')` (now a textarea),
-      `button[data-chunk-id]`, `role="dialog"`, the trust-chip text,
-      `data-testid="clear-all"`).
+- [x] P2 Landing rhythm + wedge chart legibility (tighter py, chart
+      visible by default, higher-contrast quadrants)
+- [x] P2 Full verification: typecheck clean, lint clean (only pre-
+      existing story console warnings), 129 unit + 13 e2e green,
+      production build serves the self-hosted model + CSP.
+
+## Done in this redesign (branch redesign/ui-overhaul)
+All committed and pushed. Highlights: responsive scroll-contained shell
+(mobile bottom-tab), design tokens + motion, 3-step onboarding stepper,
+chat composer/citation-pills/suggested-questions, source-card polish,
+landing rhythm + legible wedge chart, e2e onboarding-skip fixture.
+
+## Remaining polish opportunities (optional follow-ups)
+- Deeper zone UX (weight-label copy like "2.0× dominates retrieval",
+  clearer dashed containers) — currently uses the existing slider.
+- Landing: per-section mobile spot-check at 375px; consider a compact
+  "how it works in 3 steps" strip in/after the hero.
+- Tablet (md–lg): the workspace switcher rail is desktop-only; consider
+  a drawer toggle so tablet users can switch workspaces.
+- A "Take the tour" affordance is in the info dialog; consider also a
+  first-source celebration to reinforce the aha.
 
 ## Note on the e2e input selector change
 The chat composer became a `<textarea>` (Enter sends, Shift+Enter
