@@ -69,7 +69,7 @@ function buildNumberedCitations(answerText: string, ctx: CitationContext): Built
   // markers generate two separate citations.
   const re = /\[(\d+)\]/g;
   const out: BuiltCitation[] = [];
-  let seen = new Set<string>();
+  const seen = new Set<string>();
   for (const m of answerText.matchAll(re)) {
     const idxStr = m[1];
     if (!idxStr) continue;

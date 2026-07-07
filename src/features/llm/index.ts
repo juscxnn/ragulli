@@ -1,9 +1,19 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // LLM public API. The single import surface for other features.
+// Subagent D imports from here exclusively.
 
 export { streamChat } from './stream';
-export { setKey, getKey, clearAll as clearAllKeys } from './keys';
-export { PROVIDER_IDS, getAvailableProviders } from './providers';
-export type { ProviderId, ChatMessage, StreamChunk, StreamOptions, TrustActivity } from './types';
-export { buildCitations } from './citation-builder';
+export { buildCitations, segmentForRender } from './citation-builder';
+export { setKey, getKey, clearAll, hasKey } from './keys';
+export { getAvailableProviders, setProvider, getActiveProvider, getProvider } from './provider-registry';
+export type {
+  ProviderId,
+  ChatRequest,
+  StreamChunk,
+  StreamOptions,
+  ChatMessage,
+  TrustActivity,
+} from './types';
+export type { BuiltCitation, CitationContext, CitationMode, RenderSegment } from './citation-builder';
+export type { ProviderDescriptor } from './provider-registry';
