@@ -11,7 +11,10 @@ import { test as base, expect } from '@playwright/test';
 export type { Page } from '@playwright/test';
 
 export const test = base.extend({
-  page: async ({ page }, use) => {
+  // The second arg is Playwright's fixture callback. It is named `run`
+  // (not the conventional `use`) so the react-hooks lint rule does not
+  // mistake it for a React Hook call.
+  page: async ({ page }, run) => {
     await page.addInitScript(() => {
       try {
         window.localStorage.setItem('ragulli:onboarded:v1', '1');
@@ -19,7 +22,7 @@ export const test = base.extend({
         /* storage may be unavailable in some sandboxes */
       }
     });
-    await use(page);
+    await run(page);
   },
 });
 
