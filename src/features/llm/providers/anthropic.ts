@@ -16,10 +16,26 @@ import type { ChatMessage } from '@/features/retrieval/types';
 import type { StreamChunk, StreamOptions } from '../types';
 import { parseSSEResponse } from '../sse';
 
-// The proxy host. The spec says "ragulli-proxy.vercel.app"; the
-// exact subdomain is a deployment decision documented in
-// `vite.config.ts` (CSP connect-src) and `public/_headers`.
-const PROXY_URL = 'https://ragulli-proxy.vercel.app/api/anthropic';
+// Proxy URL resolution:
+//   1. Build-time override via VITE_ANTHROPIC_PROXY_URL.
+//      Useful when the static site and the Edge function are
+//      deployed to different origins (e.g., the canonical
+//      'ragulli-proxy.vercel.app' setup the spec describes).
+//   2. Same-origin `/api/anthropic` at runtime. Vercel auto-detects
+//      the Edge function at this path and serves it on the same
+//      domain as the static site, so the request never leaves the
+//      site. The CSP connect-src 'self' allow-list covers it.
+//   3. Localhost dev fallback for `pnpm dev` (no Edge function
+//      running there; the user can use a different provider).
+function resolveProxyUrl(): string {
+  const fromEnv = import.meta.env.VITE_ANTHROPIC_PROXY_URL;
+  if (typeof fromEnv === 'string' && fromEnv.length > 0) return fromEnv;
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.host}/api/anthropic`;
+  }
+  return 'https://ragulli-proxy.vercel.app/api/anthropic';
+}
+const PROXY_URL = resolveProxyUrl();
 
 interface AnthropicProxyBody {
   model: string;

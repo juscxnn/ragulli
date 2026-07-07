@@ -308,7 +308,7 @@ describe('anthropic provider', () => {
     const { stream } = await import('@/features/llm/providers/anthropic');
     await collect(stream(messages, opts));
     expect(cap.calls).toHaveLength(1);
-    expect(cap.calls[0]!.url).toMatch(/ragulli-proxy\.vercel\.app\/api\/anthropic/);
+    expect(cap.calls[0]!.url).toMatch(/\/api\/anthropic$/);
     const headers = cap.calls[0]!.init.headers as Record<string, string>;
     // CRITICAL: no x-api-key on the browser side.
     expect(headers['x-api-key']).toBeUndefined();
