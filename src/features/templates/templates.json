@@ -1,0 +1,92 @@
+[
+  {
+    "id": "research-paper-reader",
+    "name": "Research paper reader",
+    "icon": "book",
+    "description": "Read academic papers with structured summaries and a reading-companion Q&A.",
+    "ingestDefaults": { "chunkSize": 600, "chunkOverlap": 80, "ocr": false },
+    "defaultPrompt": "You are a research-paper reading companion. Answer the user's questions in plain language. Always cite the source page and paragraph. When asked to summarize, structure the summary as: 1) the question being asked, 2) the method, 3) the headline result, 4) limitations.",
+    "quickActions": [
+      { "label": "Summarize", "prompt": "Summarize this paper in 5 bullets, citing pages." },
+      { "label": "Find methodology", "prompt": "Where in this paper is the methodology described? Quote it." },
+      { "label": "List limitations", "prompt": "List every limitation the authors acknowledge, with page citations." },
+      { "label": "Compare claims", "prompt": "Compare the claims in this paper to ..." }
+    ],
+    "suggestedSources": ["sample-paper.pdf"]
+  },
+  {
+    "id": "contract-reviewer",
+    "name": "Contract reviewer",
+    "icon": "contract",
+    "description": "Surface obligations, dates, and risks in a contract before you sign.",
+    "ingestDefaults": { "chunkSize": 500, "chunkOverlap": 60, "ocr": false },
+    "defaultPrompt": "You are a contract reviewer. Highlight every obligation, deadline, and liability cap. Flag non-standard terms. Always cite the clause number.",
+    "quickActions": [
+      { "label": "Obligations", "prompt": "List every obligation each party takes on." },
+      { "label": "Deadlines", "prompt": "List every deadline and notice period." },
+      { "label": "Liability", "prompt": "Quote the liability and indemnity clauses." },
+      { "label": "Auto-renewal", "prompt": "Is there an auto-renewal? Quote it." }
+    ],
+    "suggestedSources": ["sample-contract.pdf"]
+  },
+  {
+    "id": "customer-interview-corpus",
+    "name": "Customer interview corpus",
+    "icon": "mic",
+    "description": "A searchable corpus of customer interview notes. Ask what users really said.",
+    "ingestDefaults": { "chunkSize": 700, "chunkOverlap": 90, "ocr": false },
+    "defaultPrompt": "You are a customer-research assistant. Quote verbatim where possible. Group by theme. Always cite the interview and timestamp.",
+    "quickActions": [
+      { "label": "Top pain", "prompt": "What did users complain about most often?" },
+      { "label": "Surprises", "prompt": "What surprised users about the product?" },
+      { "label": "Feature asks", "prompt": "List every feature users asked for." },
+      { "label": "Quotes", "prompt": "Pull the most striking quotes." }
+    ],
+    "suggestedSources": []
+  },
+  {
+    "id": "book-companion",
+    "name": "Book companion",
+    "icon": "chapter",
+    "description": "Read a book alongside RAGülli. Ask what a chapter meant, who a character is, what an argument was.",
+    "ingestDefaults": { "chunkSize": 900, "chunkOverlap": 120, "ocr": false },
+    "defaultPrompt": "You are a reading companion for a book. When asked about a chapter, give a 1-paragraph orientation first, then answer. Always cite the chapter.",
+    "quickActions": [
+      { "label": "Chapter X", "prompt": "What happened in chapter X?" },
+      { "label": "Define term", "prompt": "Define the term the author just used." },
+      { "label": "Argument", "prompt": "What is the author's main argument here?" },
+      { "label": "Who said", "prompt": "Who is the character I just met?" }
+    ],
+    "suggestedSources": ["sample-chapter.md"]
+  },
+  {
+    "id": "newsletter-digester",
+    "name": "Newsletter digester",
+    "icon": "article",
+    "description": "Drop a folder of newsletters; ask what was actually new this week.",
+    "ingestDefaults": { "chunkSize": 600, "chunkOverlap": 80, "ocr": false },
+    "defaultPrompt": "You are a newsletter digester. Group by topic. Highlight what is genuinely new versus re-hashes. Always cite the source newsletter and date.",
+    "quickActions": [
+      { "label": "New this week", "prompt": "What was actually new this week?" },
+      { "label": "By topic", "prompt": "Group the items by topic." },
+      { "label": "One link", "prompt": "Which single link is worth my time?" },
+      { "label": "Threads", "prompt": "Find threads across newsletters." }
+    ],
+    "suggestedSources": ["sample-article.html"]
+  },
+  {
+    "id": "job-application-matcher",
+    "name": "Job application matcher",
+    "icon": "briefcase",
+    "description": "Drop the job description and your CV. Ask which bullets to lead with.",
+    "ingestDefaults": { "chunkSize": 500, "chunkOverlap": 60, "ocr": false },
+    "defaultPrompt": "You are a job-application coach. Match the candidate's experience to the role's requirements. Always cite the source bullet and requirement line.",
+    "quickActions": [
+      { "label": "Top 3 matches", "prompt": "Which 3 experiences match the role best?" },
+      { "label": "Gaps", "prompt": "What does the role ask that the CV does not cover?" },
+      { "label": "Lead bullet", "prompt": "Suggest the opening bullet for the cover letter." },
+      { "label": "Risks", "prompt": "Where might the recruiter push back?" }
+    ],
+    "suggestedSources": []
+  }
+]
