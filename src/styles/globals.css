@@ -1,0 +1,89 @@
+/* SPDX-License-Identifier: AGPL-3.0-only
+   Copyright (c) 2026 RAGülli contributors
+   Global styles for RAGülli. Tailwind v4 (CSS-first config).
+   No @tailwind directives — v4 uses @import "tailwindcss" and exposes
+   design tokens through the @theme directive below. */
+
+@import 'tailwindcss';
+
+@theme {
+  /* Brand palette (spec §8.1) */
+  --color-bg: #0b2027;
+  --color-fg: #f2ede0;
+  --color-fg-muted: #8fa396;
+  --color-accent: #e0b158;
+  --color-border: #1f3a40;
+
+  /* Derived surfaces. Kept as CSS variables so Tailwind v4 can pick them up. */
+  --color-surface-1: #112c33;
+  --color-surface-2: #163a44;
+  --color-danger: #c45a4a;
+  --color-success: #6ea886;
+
+  /* Typography stack (spec §8.2). Self-hosted via @fontsource; no Google CDN. */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Lora', 'Source Serif Pro', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Radii and shadows tuned for a leather-bound, editorial feel. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-soft: 0 1px 0 0 rgba(255, 255, 255, 0.02), 0 6px 18px -8px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 0 1px rgba(224, 177, 88, 0.18), 0 0 24px -6px rgba(224, 177, 88, 0.35);
+}
+
+/* Reset and base layer. The dark theme is the only theme in V1. */
+:root {
+  color-scheme: dark;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.55;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(224, 177, 88, 0.35);
+  color: var(--color-fg);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Quiet scrollbar for the scholarly look. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
