@@ -4,6 +4,15 @@
    No @tailwind directives — v4 uses @import "tailwindcss" and exposes
    design tokens through the @theme directive below. */
 
+/* Self-hosted font families (spec §8.2). Imported BEFORE Tailwind so
+   the `@theme` font stacks below pick up the real family names. */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/lora/400.css';
+@import '@fontsource/lora/500.css';
+@import '@fontsource/jetbrains-mono/400.css';
+
 @import 'tailwindcss';
 
 @theme {

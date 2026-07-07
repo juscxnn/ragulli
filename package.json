@@ -24,6 +24,9 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource/inter": "5.2.8",
+    "@fontsource/jetbrains-mono": "5.2.8",
+    "@fontsource/lora": "5.2.8",
     "@huggingface/transformers": "3.8.1",
     "@mlc-ai/web-llm": "0.2.84",
     "@mozilla/readability": "0.6.0",
