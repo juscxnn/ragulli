@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FC } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { GearIcon, InfoIcon } from '@/components/icons';
+import { GearIcon, InfoIcon, LayersIcon, ChatIcon } from '@/components/icons';
 import { Button } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { FirstDrop } from '@/features/dropzone/FirstDrop';
@@ -44,10 +44,14 @@ const TEMPLATE_URL_PARAM = 'template';
 /** Custom event any panel can dispatch to open the Settings dialog. */
 export const OPEN_SETTINGS_EVENT = 'ragulli:open-settings';
 
+/** Which pane is visible on small screens (single-pane layout). */
+type MobilePane = 'workspace' | 'chat';
+
 export const App: FC = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [mobilePane, setMobilePane] = useState<MobilePane>('workspace');
   const viewerRef = useRef<SourceViewerHandle>(null);
 
   const activeWorkspaceId = useWorkspaceStore((s) => s.activeWorkspaceId);
@@ -213,28 +217,61 @@ export const App: FC = () => {
   const showFirstDrop = sourceCount === 0 && !ingestInFlight;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-fg)]">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-[var(--color-bg)] text-[var(--color-fg)]">
       <Topbar
         onOpenInfo={() => setInfoOpen(true)}
         onOpenSettings={() => setSettingsOpen(true)}
       />
 
       {activeWorkspaceId ? (
-        <main className="flex-1 flex min-h-0">
-          <div className="w-56 shrink-0">
-            <WorkspaceSwitcher />
-          </div>
-          <div className="flex-1 min-w-0 border-r border-[var(--color-border)] overflow-auto">
-            {showFirstDrop ? (
-              <FirstDrop workspaceId={activeWorkspaceId} />
-            ) : (
-              <Canvas workspaceId={activeWorkspaceId} />
-            )}
-          </div>
-          <div className="w-[420px] shrink-0">
-            <ChatPanel />
-          </div>
-        </main>
+        <>
+          <main className="flex-1 min-h-0 flex">
+            {/* Workspace switcher rail — desktop only. */}
+            <aside className="hidden lg:flex w-64 shrink-0 border-r border-[var(--color-border)] min-h-0 overflow-y-auto">
+              <WorkspaceSwitcher />
+            </aside>
+
+            {/* Workspace / canvas pane. Single-pane on mobile: shown
+                only when the workspace tab is active. */}
+            <section
+              className={`${
+                mobilePane === 'workspace' ? 'flex' : 'hidden'
+              } md:flex flex-1 min-w-0 min-h-0 flex-col border-r border-[var(--color-border)] overflow-y-auto`}
+            >
+              {showFirstDrop ? (
+                <FirstDrop workspaceId={activeWorkspaceId} />
+              ) : (
+                <Canvas workspaceId={activeWorkspaceId} />
+              )}
+            </section>
+
+            {/* Chat pane. Fixed, comfortable width on desktop; full
+                width single-pane on mobile. */}
+            <section
+              className={`${
+                mobilePane === 'chat' ? 'flex' : 'hidden'
+              } md:flex w-full md:w-[380px] lg:w-[420px] xl:w-[460px] shrink-0 min-h-0 flex-col`}
+            >
+              <ChatPanel />
+            </section>
+          </main>
+
+          {/* Mobile pane switcher. Hidden from md up. */}
+          <nav className="md:hidden shrink-0 grid grid-cols-2 border-t border-[var(--color-border)] bg-[var(--color-surface-1)]">
+            <MobileTab
+              label="Sources"
+              icon={<LayersIcon size={18} />}
+              active={mobilePane === 'workspace'}
+              onClick={() => setMobilePane('workspace')}
+            />
+            <MobileTab
+              label="Chat"
+              icon={<ChatIcon size={18} />}
+              active={mobilePane === 'chat'}
+              onClick={() => setMobilePane('chat')}
+            />
+          </nav>
+        </>
       ) : (
         <main className="flex-1 flex items-center justify-center">
           <p className="text-sm text-[var(--color-fg-muted)]">Opening your workspace…</p>
@@ -267,30 +304,50 @@ export const App: FC = () => {
   );
 };
 
+const MobileTab: FC<{
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}> = ({ label, icon, active, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    aria-pressed={active}
+    className={`flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors ${
+      active
+        ? 'text-[var(--color-accent)]'
+        : 'text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]'
+    }`}
+  >
+    {icon}
+    {label}
+  </button>
+);
+
 export default App;
 
 const Topbar: FC<{ onOpenInfo: () => void; onOpenSettings: () => void }> = ({
   onOpenInfo,
   onOpenSettings,
 }) => (
-  <header className="flex items-center justify-between px-6 h-14 border-b border-[var(--color-border)] shrink-0">
-    <div className="flex items-center gap-3">
-      <img src={logoMark} alt="RAGülli" width={28} height={28} />
-      <span className="font-serif text-lg text-[var(--color-fg)]">RAGülli</span>
-      <span className="hidden sm:inline text-xs text-[var(--color-fg-muted)] ml-2">
+  <header className="flex items-center justify-between gap-3 px-4 md:px-6 h-14 border-b border-[var(--color-border)] shrink-0 bg-[var(--color-bg)]">
+    <a href="/" className="flex items-center gap-2.5 hover:no-underline min-w-0">
+      <img src={logoMark} alt="" width={26} height={26} className="shrink-0" />
+      <span className="font-serif text-lg text-[var(--color-fg)] leading-none">RAGülli</span>
+      <span className="hidden md:inline text-xs text-[var(--color-fg-muted)] ml-1.5 truncate">
         Your files. Your AI. Your browser.
       </span>
-    </div>
-    <nav className="flex items-center gap-1">
-      <Button
-        variant="ghost"
-        size="sm"
+    </a>
+    <nav className="flex items-center gap-1 shrink-0">
+      <button
+        type="button"
         aria-label="What is RAGülli?"
-        leadingIcon={<InfoIcon size={16} />}
         onClick={onOpenInfo}
+        className="inline-flex items-center justify-center h-9 w-9 rounded-lg text-[var(--color-fg-muted)] hover:text-[var(--color-fg)] hover:bg-[var(--color-surface-1)] transition-colors"
       >
-        ?
-      </Button>
+        <InfoIcon size={18} />
+      </button>
       <Button
         variant="ghost"
         size="sm"
@@ -298,7 +355,7 @@ const Topbar: FC<{ onOpenInfo: () => void; onOpenSettings: () => void }> = ({
         leadingIcon={<GearIcon size={16} />}
         onClick={onOpenSettings}
       >
-        Settings
+        <span className="hidden sm:inline">Settings</span>
       </Button>
     </nav>
   </header>

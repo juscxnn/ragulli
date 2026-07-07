@@ -26,20 +26,86 @@
   /* Derived surfaces. Kept as CSS variables so Tailwind v4 can pick them up. */
   --color-surface-1: #112c33;
   --color-surface-2: #163a44;
+  --color-surface-3: #1c4650; /* hover / raised */
   --color-danger: #c45a4a;
   --color-success: #6ea886;
+  --color-accent-soft: rgba(224, 177, 88, 0.12); /* amber wash for chips/pills */
 
   /* Typography stack (spec §8.2). Self-hosted via @fontsource; no Google CDN. */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-serif: 'Lora', 'Source Serif Pro', ui-serif, Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Radii and shadows tuned for a leather-bound, editorial feel. */
+  /* Radii tuned for a leather-bound, editorial feel. */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Elevation. Soft, warm-neutral shadows — never harsh. */
   --shadow-soft: 0 1px 0 0 rgba(255, 255, 255, 0.02), 0 6px 18px -8px rgba(0, 0, 0, 0.6);
+  --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  --shadow-panel: 0 2px 8px -2px rgba(0, 0, 0, 0.35), 0 18px 48px -20px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 12px 32px -8px rgba(0, 0, 0, 0.5), 0 40px 80px -24px rgba(0, 0, 0, 0.7);
   --shadow-glow: 0 0 0 1px rgba(224, 177, 88, 0.18), 0 0 24px -6px rgba(224, 177, 88, 0.35);
+
+  /* Motion. One easing curve, three durations. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+}
+
+/* Motion utilities. Respect reduced-motion. */
+@keyframes ragulli-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ragulli-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ragulli-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: ragulli-fade-in var(--dur-base) var(--ease-out) both;
+  }
+  .animate-rise {
+    animation: ragulli-rise var(--dur-slow) var(--ease-out) both;
+  }
+  .animate-pop {
+    animation: ragulli-pop var(--dur-base) var(--ease-out) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-rise,
+  .animate-pop {
+    animation: none;
+  }
 }
 
 /* Reset and base layer. The dark theme is the only theme in V1.

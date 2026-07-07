@@ -118,3 +118,48 @@ export const ChevronDownIcon: FC<IconProps> = (p) => (
     <path d="M6 9l6 6 6-6" />
   </Base>
 );
+
+export const MenuIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M4 6h16M4 12h16M4 18h16" />
+  </Base>
+);
+
+export const LayersIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M12 3l9 5-9 5-9-5 9-5z" />
+    <path d="M3 13l9 5 9-5" />
+  </Base>
+);
+
+export const ChatIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-3.5A8 8 0 1 1 21 12z" />
+    <path d="M8.5 11h.01M12 11h.01M15.5 11h.01" />
+  </Base>
+);
+
+export const ShieldIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6l7-3z" />
+    <path d="M9 12l2 2 4-4" />
+  </Base>
+);
+
+export const SparkleIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M12 3l1.6 5.4L19 10l-5.4 1.6L12 17l-1.6-5.4L5 10l5.4-1.6L12 3z" />
+  </Base>
+);
+
+export const ArrowRightIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </Base>
+);
+
+export const PlusIcon: FC<IconProps> = (p) => (
+  <Base {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Base>
+);
