@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 RAGülli contributors
-// FirstDrop — the Scene 1 hero. Four big icon-buttons (PDF, URL,
-// TEXT, AUDIO-disabled) plus four sample-file buttons. AUDIO is V1.5
-// per spec §1.5, so we render it disabled with a tooltip. Each
-// non-disabled button triggers the real ingest pipeline through the
-// `onPick` callbacks that the App wires up.
+// FirstDrop — the Scene 1 hero. A real drop target, four big
+// icon-buttons (PDF, URL, TEXT, AUDIO-disabled) plus four
+// sample-file buttons. AUDIO is V1.5 per spec §1.5, so we render it
+// disabled with a tooltip. Every non-disabled path routes through
+// the shared ingest controller, so progress and failures surface in
+// the workspace store — never only in the console. The URL path
+// opens a proper dialog (no window.prompt) that validates the URL
+// and shows fetch errors inline.
 
-import { useCallback, useRef, type ChangeEvent, type FC } from 'react';
+import { useCallback, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ArticleIcon,
@@ -18,16 +21,17 @@ import {
   TextIcon,
   UrlIcon,
 } from '@/components/icons';
+import { Button } from '@/components/ui/Button';
+import { Dialog } from '@/components/ui/Dialog';
+import { Dropzone } from '@/components/ui/Dropzone';
 import { Tooltip } from '@/components/ui/Tooltip';
 import type { TooltipProps } from '@/components/ui/Tooltip';
-import { ingestFile } from '@/features/ingest/pipeline';
 import { parseUrl, UrlFetchError } from '@/features/ingest/parsers/url';
-import type { ProgressEvent } from '@/features/ingest/types';
+import { ingestFiles, reportIngestError } from '@/features/workspace/ingest';
+import { useWorkspaceStore } from '@/features/workspace/store';
 
 export type FirstDropProps = {
   workspaceId: string;
-  chunkSize?: number;
-  chunkOverlap?: number;
   onAfterIngest?: (sourceId: string) => void;
 };
 
@@ -72,80 +76,46 @@ const SAMPLES: SampleButton[] = [
   },
 ];
 
-export const FirstDrop: FC<FirstDropProps> = ({
-  workspaceId,
-  chunkSize = 800,
-  chunkOverlap = 100,
-  onAfterIngest,
-}) => {
+const ACCEPT_ALL = '.pdf,.docx,.md,.markdown,.txt,.html,.htm';
+
+export const FirstDrop: FC<FirstDropProps> = ({ workspaceId, onAfterIngest }) => {
   const filePdfRef = useRef<HTMLInputElement>(null);
   const fileTextRef = useRef<HTMLInputElement>(null);
+  const [urlDialogOpen, setUrlDialogOpen] = useState(false);
+  const ingestProgress = useWorkspaceStore((s) => s.ingestProgress);
 
-  const handleFile = useCallback(
-    async (file: File) => {
-      try {
-        const result = await ingestFile(
-          file,
-          { workspaceId, chunkSize, chunkOverlap },
-          (e: ProgressEvent) => {
-            // The Canvas subscribes to the trust log; we just push
-            // a trust entry per file. Progress events flow through
-            // the workspace store via the canvas when this source
-            // gets attached.
-            void e;
-          },
-        );
-        onAfterIngest?.(result.sourceId);
-      } catch (err) {
-        // Surface to console; the trust panel will pick up the
-        // error from the calling app and display it.
-        // eslint-disable-next-line no-console
-        console.warn('Ingest failed:', err);
-      }
+  const handleFiles = useCallback(
+    async (files: File[]) => {
+      const sourceIds = await ingestFiles(files, workspaceId);
+      for (const id of sourceIds) onAfterIngest?.(id);
     },
-    [workspaceId, chunkSize, chunkOverlap, onAfterIngest],
+    [workspaceId, onAfterIngest],
   );
 
   const onPickPdf = (): void => filePdfRef.current?.click();
   const onPickText = (): void => fileTextRef.current?.click();
 
-  const onPickUrl = async (): Promise<void> => {
-    const url = window.prompt('Paste a URL');
-    if (!url) return;
-    try {
-      const parsed = await parseUrl(url);
-      const blob = new Blob([parsed.text], { type: 'text/plain' });
-      const file = new File([blob], `${hostname(url)}.txt`, { type: 'text/plain' });
-      await handleFile(file);
-    } catch (err) {
-      if (err instanceof UrlFetchError) {
-        window.alert(`Could not fetch the URL. ${err.message}`);
-      } else {
-        window.alert('Could not fetch the URL.');
-      }
-    }
-  };
-
   const onPickSample = useCallback(
     async (id: SampleId) => {
       const sample = SAMPLES.find((s) => s.id === id);
       if (!sample) return;
+      const filename = basenameFromHref(sample.href);
       try {
         const res = await fetch(sample.href);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`The sample could not be fetched (HTTP ${res.status}).`);
         const blob = await res.blob();
         const mime = blob.type || guessMimeFromHref(sample.href);
-        const file = new File([blob], basenameFromHref(sample.href), { type: mime });
-        await handleFile(file);
+        const file = new File([blob], filename, { type: mime });
+        await handleFiles([file]);
       } catch (err) {
-        window.alert(`Could not load sample. ${errMessage(err)}`);
+        reportIngestError(filename, err);
       }
     },
-    [handleFile],
+    [handleFiles],
   );
 
   return (
-    <section className="w-full max-w-3xl mx-auto px-6 py-12 flex flex-col gap-10">
+    <section className="w-full max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
       <header className="text-center flex flex-col gap-3">
         <h1 className="font-serif text-3xl sm:text-4xl text-[var(--color-fg)] tracking-tight">
           Your files. Your AI. Your browser.
@@ -155,9 +125,28 @@ export const FirstDrop: FC<FirstDropProps> = ({
         </p>
       </header>
 
+      {ingestProgress?.phase === 'error' ? (
+        <div
+          role="alert"
+          className="rounded-md border border-[var(--color-danger)]/40 bg-[var(--color-surface-2)] px-3 py-2 text-xs text-[var(--color-danger)]"
+        >
+          <span className="text-[var(--color-fg)]">{ingestProgress.filename}</span> could not
+          be ingested{ingestProgress.error ? `: ${ingestProgress.error}` : '.'}
+        </div>
+      ) : null}
+
+      <Dropzone onFiles={(files) => void handleFiles(files)} accept={ACCEPT_ALL}>
+        <div className="flex flex-col items-center gap-2 py-4">
+          <span className="text-sm text-[var(--color-fg)]">Drop a file to ingest</span>
+          <span className="text-xs text-[var(--color-fg-muted)]">
+            PDF, DOCX, Markdown, text, HTML
+          </span>
+        </div>
+      </Dropzone>
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <BigButton label="PDF" icon={<PdfIcon size={28} />} onClick={onPickPdf} />
-        <BigButton label="URL" icon={<UrlIcon size={28} />} onClick={() => void onPickUrl()} />
+        <BigButton label="URL" icon={<UrlIcon size={28} />} onClick={() => setUrlDialogOpen(true)} />
         <BigButton label="TEXT" icon={<TextIcon size={28} />} onClick={onPickText} />
         <Tooltip content="Coming in 1.5">
           <div>
@@ -201,7 +190,7 @@ export const FirstDrop: FC<FirstDropProps> = ({
         className="hidden"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const f = e.target.files?.[0];
-          if (f) void handleFile(f);
+          if (f) void handleFiles([f]);
           e.target.value = '';
         }}
       />
@@ -212,9 +201,15 @@ export const FirstDrop: FC<FirstDropProps> = ({
         className="hidden"
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           const f = e.target.files?.[0];
-          if (f) void handleFile(f);
+          if (f) void handleFiles([f]);
           e.target.value = '';
         }}
+      />
+
+      <UrlIngestDialog
+        open={urlDialogOpen}
+        onClose={() => setUrlDialogOpen(false)}
+        onIngest={handleFiles}
       />
 
       {/* Hint for the E2E selector */}
@@ -225,6 +220,112 @@ export const FirstDrop: FC<FirstDropProps> = ({
         {uuidv4()}
       </p>
     </section>
+  );
+};
+
+type UrlIngestDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onIngest: (files: File[]) => Promise<void>;
+};
+
+/** The URL ingest dialog. Validates the URL before fetching and
+ *  keeps fetch errors inside the dialog so the user can correct the
+ *  address and retry without losing context. */
+const UrlIngestDialog: FC<UrlIngestDialogProps> = ({ open, onClose, onIngest }) => {
+  const [url, setUrl] = useState('');
+  const [fetching, setFetching] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const reset = (): void => {
+    setUrl('');
+    setError(null);
+    setFetching(false);
+  };
+
+  const close = (): void => {
+    if (fetching) return;
+    reset();
+    onClose();
+  };
+
+  const submit = async (): Promise<void> => {
+    const trimmed = url.trim();
+    const invalid = validateUrl(trimmed);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+    setError(null);
+    setFetching(true);
+    try {
+      const parsed = await parseUrl(trimmed);
+      const blob = new Blob([parsed.text], { type: 'text/plain' });
+      const file = new File([blob], `${hostname(trimmed)}.txt`, { type: 'text/plain' });
+      reset();
+      onClose();
+      await onIngest([file]);
+    } catch (err) {
+      setFetching(false);
+      if (err instanceof UrlFetchError) {
+        setError(err.message);
+      } else {
+        setError(`Could not fetch the URL. ${errMessage(err)}`);
+      }
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={close}
+      title="Ingest a URL"
+      description="We fetch the page in this tab, extract the article text, and index it locally."
+      width="md"
+    >
+      <form
+        className="flex flex-col gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit();
+        }}
+      >
+        <label
+          htmlFor="first-drop-url"
+          className="text-xs uppercase tracking-wide text-[var(--color-fg-muted)]"
+        >
+          URL to ingest
+        </label>
+        <input
+          id="first-drop-url"
+          type="url"
+          value={url}
+          autoFocus
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com/article"
+          disabled={fetching}
+          className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:outline-none focus-visible:shadow-[var(--shadow-glow)] disabled:opacity-50"
+        />
+        {error ? (
+          <p role="alert" className="text-xs text-[var(--color-danger)]">
+            {error}
+          </p>
+        ) : null}
+        <div className="flex items-center gap-2">
+          <Button
+            type="submit"
+            size="sm"
+            variant="primary"
+            disabled={fetching || url.trim().length === 0}
+          >
+            {fetching ? 'Fetching' : 'Fetch and ingest'}
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={close} disabled={fetching}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </Dialog>
   );
 };
 
@@ -248,6 +349,21 @@ const BigButton: FC<BigButtonProps> = ({ label, icon, onClick, disabled }) => (
     <span className="text-xs uppercase tracking-wide">{label}</span>
   </button>
 );
+
+/** Returns a plain-English problem statement, or null when valid. */
+function validateUrl(raw: string): string | null {
+  if (raw.length === 0) return 'Paste a URL first.';
+  let parsed: URL;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return 'That does not look like a valid URL. Include the full address, like https://example.com/article.';
+  }
+  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+    return 'Only http and https URLs can be ingested.';
+  }
+  return null;
+}
 
 function hostname(url: string): string {
   try {

@@ -43,7 +43,7 @@ function makeInitialState(): Record<ProviderId, RowState> {
 async function probeProvider(p: ProviderDescriptor, key: string): Promise<string> {
   // The cheapest valid call for each provider: one short user
   // message, max_tokens capped. We never persist anything.
-  const url = providerEndpoint(p.id);
+  const url = providerEndpoint(p, key);
   if (!url) throw new Error('No probe URL for this provider');
 
   const headers = providerHeaders(p.id, key);
@@ -69,12 +69,14 @@ async function probeProvider(p: ProviderDescriptor, key: string): Promise<string
   return 'Connection succeeded.';
 }
 
-function providerEndpoint(id: ProviderId): string | null {
-  switch (id) {
+function providerEndpoint(p: ProviderDescriptor, key: string): string | null {
+  switch (p.id) {
     case 'openai':
       return 'https://api.openai.com/v1/chat/completions';
     case 'google':
-      return 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse';
+      // Model id comes from the registry (single source of truth);
+      // Gemini takes the API key as a query param.
+      return `https://generativelanguage.googleapis.com/v1beta/models/${p.defaultModel}:streamGenerateContent?alt=sse&key=${encodeURIComponent(key)}`;
     case 'minimax':
       return 'https://api.minimaxi.chat/v1/text/chatcompletion_v2';
     case 'kimi':

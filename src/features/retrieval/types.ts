@@ -67,7 +67,14 @@ export type ChatMessage = {
 export type TrustActivity = {
   id: string;
   ts: number;
-  kind: 'file' | 'chunk' | 'embed' | 'model-call' | 'model-response' | 'error';
+  kind:
+    | 'file'
+    | 'chunk'
+    | 'embed'
+    | 'model-download'
+    | 'model-call'
+    | 'model-response'
+    | 'error';
   summary: string;
   destination?: string;
 };

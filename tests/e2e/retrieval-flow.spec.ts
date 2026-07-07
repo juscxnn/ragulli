@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 RAGülli contributors
 // Retrieval-flow E2E test. Two scenarios:
-//   1. Without a BYOK key, switching the active provider to one
-//      that needs a key surfaces a friendly hint in the chat
-//      panel — no fake spinner, no silent failure.
+//   1. Without a BYOK key, asking a question does not error out:
+//      the chat panel answers from local retrieval (an honest
+//      extractive answer with quoted passages) or, if retrieval
+//      itself cannot run in this environment, surfaces a clear
+//      failure — no fake spinner, no silent failure.
 //   2. With a Source + Chunk rows seeded and a citation-bearing
 //      chat message in the store, the chat panel renders the
 //      citation as a clickable inline span.
@@ -71,7 +73,7 @@ async function seedSourceChunks(
   );
 }
 
-test('without a BYOK key, the chat input is disabled until one is provided', async ({
+test('without a BYOK key, asking yields a local extractive answer or a clear failure', async ({
   page,
 }) => {
   await page.goto('/app/');
@@ -209,23 +211,23 @@ test('without a BYOK key, the chat input is disabled until one is provided', asy
   await input.fill('summarize');
   await page.keyboard.press('Enter');
 
-  // The chat panel should surface an alert about the missing key.
-  // The error message uses a [role="alert"] wrapper.
-  const alert = page.locator('[role="alert"]').first();
-  await expect(alert).toBeVisible({ timeout: 15_000 });
+  // Two acceptable outcomes, both honest:
+  //  - the extractive no-key answer ("local retrieval only", with
+  //    the top passages quoted) when the embed worker can run;
+  //  - a [role="alert"] with "Retrieval failed: ..." when the embed
+  //    model cannot be fetched in this environment.
+  // Either way there is no fake spinner and no silent failure.
+  const outcome = page
+    .getByText(/local retrieval/i)
+    .or(page.locator('[role="alert"]'))
+    .first();
+  await expect(outcome).toBeVisible({ timeout: 15_000 });
 
-  // Either of two messages is acceptable:
-  //  - "Add a key in Settings to use Anthropic." (preferred path)
-  //  - "Retrieval failed: ..." (fallback if the key check missed)
-  // The acceptance check: the error must mention "key" or "Settings"
-  // somewhere; if it says only "Retrieval failed: Failed to fetch"
-  // that's because the embed worker tried to fetch the model and
-  // failed — but we never got far enough to check the key, which
-  // means hasKey returned true. We accept that as well — the
-  // important assertion is that the chat panel shows a clear
-  // failure path rather than a fake spinner.
-  const text = await alert.textContent();
-  expect(text).toMatch(/key|Settings|Retrieval failed/i);
+  const alert = page.locator('[role="alert"]');
+  if ((await alert.count()) > 0) {
+    const text = await alert.first().textContent();
+    expect(text).toMatch(/key|Settings|Retrieval failed/i);
+  }
 });
 
 test('with a citation-bearing message, the chat panel renders a clickable span', async ({

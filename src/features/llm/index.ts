@@ -6,7 +6,13 @@
 export { streamChat } from './stream';
 export { buildCitations, segmentForRender } from './citation-builder';
 export { setKey, getKey, clearAll, hasKey } from './keys';
-export { getAvailableProviders, setProvider, getActiveProvider, getProvider } from './provider-registry';
+export {
+  getAvailableProviders,
+  setProvider,
+  getActiveProvider,
+  getProvider,
+  hasExplicitProviderChoice,
+} from './provider-registry';
 export type {
   ProviderId,
   ChatRequest,

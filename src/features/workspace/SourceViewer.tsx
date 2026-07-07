@@ -30,17 +30,15 @@ export type SourceViewerHandle = {
   scrollToChar: (charStart: number) => void;
 };
 
-const PDFJS_WORKER_URL = 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-
 let workerSrcSet = false;
 async function ensureWorker(): Promise<void> {
   if (workerSrcSet) return;
-  try {
-    const url = (await import(/* @vite-ignore */ PDFJS_WORKER_URL)).default as string;
-    GlobalWorkerOptions.workerSrc = url;
-  } catch {
-    GlobalWorkerOptions.workerSrc = '';
-  }
+  // Vite resolves the `?url` import at BUILD time to the hashed asset
+  // path — the same wiring the ingest parser uses. A runtime dynamic
+  // import of the bare specifier cannot resolve in a production
+  // bundle, which left the viewer unable to render PDFs at all.
+  const { default: url } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+  GlobalWorkerOptions.workerSrc = url;
   workerSrcSet = true;
 }
 

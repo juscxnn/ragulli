@@ -19,7 +19,7 @@ export type { ChatMessage, TrustActivity } from '@/features/retrieval/types';
 export interface StreamOptions {
   /** The user's BYOK key. Empty string for the in-browser `webllm` provider. */
   apiKey: string;
-  /** The model id (e.g. `gpt-4o-mini`, `claude-sonnet-4-5`, `Phi-3.5-mini-instruct-q4f16_1-MLC`). */
+  /** The model id (e.g. `gpt-5-mini`, `claude-opus-4-8`, `Phi-3.5-mini-instruct-q4f16_1-MLC`). */
   model: string;
   /** Cooperative cancellation; honored by all HTTP-based providers. */
   signal?: AbortSignal;

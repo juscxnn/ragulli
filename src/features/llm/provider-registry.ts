@@ -32,7 +32,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   openai: {
     id: 'openai',
     label: 'OpenAI',
-    defaultModel: 'gpt-4o-mini',
+    defaultModel: 'gpt-5-mini',
     needsKey: true,
     corsDirect: true,
     stream: openai.stream,
@@ -40,7 +40,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   anthropic: {
     id: 'anthropic',
     label: 'Anthropic',
-    defaultModel: 'claude-sonnet-4-5',
+    defaultModel: 'claude-opus-4-8',
     needsKey: true,
     corsDirect: false, // routed through the Vercel Edge proxy
     stream: anthropic.stream,
@@ -48,7 +48,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   google: {
     id: 'google',
     label: 'Google Gemini',
-    defaultModel: 'gemini-1.5-flash',
+    defaultModel: 'gemini-2.5-flash',
     needsKey: true,
     corsDirect: true,
     stream: google.stream,
@@ -56,7 +56,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   minimax: {
     id: 'minimax',
     label: 'MiniMax',
-    defaultModel: 'MiniMax-Text-01',
+    defaultModel: 'MiniMax-M2',
     needsKey: true,
     corsDirect: true,
     stream: minimax.stream,
@@ -64,7 +64,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   kimi: {
     id: 'kimi',
     label: 'Moonshot Kimi',
-    defaultModel: 'moonshot-v1-8k',
+    defaultModel: 'kimi-k2-0905-preview',
     needsKey: true,
     corsDirect: true,
     stream: kimi.stream,
@@ -131,6 +131,21 @@ export function getActiveProvider(): ProviderId {
   // without a BYOK key, so it is the right first-run default.
   activeProvider = 'webllm';
   return activeProvider;
+}
+
+/**
+ * True once the user has deliberately picked a provider in Settings.
+ * Spec §4.4 makes the in-browser model opt-in ("off by default"), so
+ * before an explicit choice the chat answers from local retrieval
+ * instead of silently starting a multi-gigabyte WebLLM download.
+ */
+export function hasExplicitProviderChoice(): boolean {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored !== null && isProviderId(stored);
+  } catch {
+    return false;
+  }
 }
 
 function isProviderId(s: string): s is ProviderId {

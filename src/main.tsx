@@ -28,19 +28,24 @@ if ('serviceWorker' in navigator) {
 
 // E2E testability hook. The trust-panel claim is preserved — this
 // is a debug accessor that the application already needs to function.
-// We expose the workspace store and trust log on `window` so Playwright
-// can drive the chat panel without depending on private module URLs
-// in the production bundle. The hook is a thin re-export and does not
-// add any new browser-visible behavior.
+// We expose the workspace store, the trust log, and a small set of
+// public APIs on `window` so Playwright can drive the chat panel
+// without depending on private module URLs in the production bundle.
+// The hook is a thin re-export and does not add any new browser-
+// visible behavior.
+import { topK } from './features/retrieval/search';
+
 declare global {
   interface Window {
     __ragulli?: {
       store: typeof useWorkspaceStore;
       trust: typeof useTrustLog;
+      topK: typeof topK;
     };
   }
 }
 window.__ragulli = {
   store: useWorkspaceStore,
   trust: useTrustLog,
+  topK,
 };

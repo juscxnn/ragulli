@@ -79,7 +79,9 @@ export const Dialog: FC<DialogProps> = ({
             <CloseIcon size={18} />
           </button>
         </header>
-        <div className="p-5 text-sm text-[var(--color-fg)]">{children}</div>
+        <div className="p-5 text-sm text-[var(--color-fg)] max-h-[70vh] overflow-y-auto">
+          {children}
+        </div>
         {footer ? (
           <footer className="p-5 border-t border-[var(--color-border)] flex justify-end gap-2">
             {footer}

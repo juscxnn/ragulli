@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Copyright (c) 2026 RAGülli contributors
 // About settings tab. Version (read from package.json), license,
-// GitHub link, the "no analytics, no telemetry" pledge, and a link
-// to the docs. This is the page users land on when they ask
-// "what is this thing?" — keep the copy short and direct.
+// GitHub link, the "no analytics, no telemetry" pledge, an
+// Advanced section that enumerates every outbound origin the CSP
+// allow-lists and what it is used for, and a link to the docs. This
+// is the page users land on when they ask "what is this thing?" —
+// keep the copy short and direct.
 
 import { useMemo, type FC } from 'react';
 
@@ -14,6 +16,24 @@ const PRIVACY_URL = '/privacy';
 interface BuildInfo {
   version: string;
 }
+
+/** Every origin the Content-Security-Policy allow-lists, with a
+ *  one-line justification. Mirrored in vite.config.ts and in the
+ *  audit list in SECURITY.md — keep all three in sync. */
+const CONNECT_SRC_TABLE: ReadonlyArray<{ origin: string; purpose: string }> = [
+  { origin: "'self'", purpose: 'App assets, the self-hosted embedding model at /models/, the service worker cache, and the in-browser PWA shell.' },
+  { origin: 'https://api.openai.com', purpose: 'BYOK direct call — OpenAI / GPT family. Reached only when the user pastes a key and asks a question.' },
+  { origin: 'https://api.anthropic.com', purpose: 'BYOK direct path — kept as a fallback for self-hosted CORS; the primary Anthropic route is the Vercel Edge proxy below.' },
+  { origin: 'https://ragulli-proxy.vercel.app', purpose: 'Stateless Vercel Edge function for Anthropic CORS. Receives only the question and the user-supplied key; never the files.' },
+  { origin: 'https://generativelanguage.googleapis.com', purpose: 'BYOK direct call — Google Gemini.' },
+  { origin: 'https://api.minimaxi.chat', purpose: 'BYOK direct call — MiniMax / M2.' },
+  { origin: 'https://api.moonshot.cn', purpose: 'BYOK direct call — Moonshot / Kimi.' },
+  { origin: 'https://huggingface.co', purpose: "transformers.js / WebLLM model weights download — not the user's files; only model weights." },
+  { origin: 'https://cdn-lfs.huggingface.co', purpose: "transformers.js / WebLLM model weights download — not the user's files; only model weights." },
+  { origin: 'https://*.huggingface.co', purpose: "transformers.js / WebLLM weight shards — not the user's files; only model weights." },
+  { origin: 'https://*.hf.co', purpose: "transformers.js / WebLLM model weights download — not the user's files; only model weights." },
+  { origin: 'https://raw.githubusercontent.com', purpose: "WebLLM public model manifest fetch — not the user's files; only model config." },
+];
 
 export const About: FC = () => {
   const build = useMemo<BuildInfo>(() => {
@@ -62,6 +82,38 @@ export const About: FC = () => {
           <li>No analytics. No cookies. No third-party origins in the CSP.</li>
           <li>The only outbound calls are BYOK model calls you initiate yourself.</li>
           <li>Clearing local data is one tap in the Danger Zone tab.</li>
+        </ul>
+      </section>
+
+      <section
+        data-testid="connect-src-advanced"
+        className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4 flex flex-col gap-3"
+      >
+        <header className="flex items-baseline justify-between gap-3">
+          <h3 className="text-sm font-medium text-[var(--color-fg)]">
+            Advanced: every outbound origin
+          </h3>
+          <span className="text-[10px] uppercase tracking-wide text-[var(--color-fg-muted)]">
+            CSP connect-src
+          </span>
+        </header>
+        <p className="text-sm text-[var(--color-fg-muted)]">
+          Every connection the tab is allowed to open. The browser refuses any request
+          to an origin not on this list, so this table is the complete picture of where
+          bytes can leave the tab.
+        </p>
+        <ul className="flex flex-col gap-2 text-sm">
+          {CONNECT_SRC_TABLE.map((row) => (
+            <li
+              key={row.origin}
+              className="flex flex-col gap-0.5 border-b border-[var(--color-border)] pb-2 last:border-b-0"
+            >
+              <code className="text-xs font-mono text-[var(--color-fg)] break-all">
+                {row.origin}
+              </code>
+              <span className="text-xs text-[var(--color-fg-muted)]">{row.purpose}</span>
+            </li>
+          ))}
         </ul>
       </section>
 

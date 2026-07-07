@@ -6,7 +6,7 @@
 // adapter so callers do not import Dexie directly and the schema
 // can be evolved in one place.
 
-import type { Chunk, Source, Zone } from './types';
+import type { Chat, Chunk, Source, Zone } from './types';
 import { db } from '@/lib/db';
 
 export async function putSource(s: Source): Promise<void> {
@@ -32,6 +32,22 @@ export async function getChunksForSource(sourceId: string): Promise<Chunk[]> {
 
 export async function getAllChunks(): Promise<Chunk[]> {
   return db.chunks.toArray();
+}
+
+export async function listChunksForWorkspace(workspaceId: string): Promise<Chunk[]> {
+  return db.chunks.where('workspaceId').equals(workspaceId).sortBy('position');
+}
+
+export async function putChat(chat: Chat): Promise<void> {
+  await db.chats.put(chat);
+}
+
+/** Latest persisted chat thread for a workspace, or undefined when the
+ *  user has never asked anything there. */
+export async function getChatForWorkspace(workspaceId: string): Promise<Chat | undefined> {
+  const rows = await db.chats.where('workspaceId').equals(workspaceId).toArray();
+  if (rows.length === 0) return undefined;
+  return rows.slice().sort((a, b) => b.createdAt - a.createdAt)[0];
 }
 
 export async function putZone(z: Zone): Promise<void> {

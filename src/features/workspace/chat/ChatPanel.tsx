@@ -9,6 +9,10 @@
 //     `buildCitations` + `segmentForRender`, render segments with
 //     CitationSpan for clickable spans.
 //   - Sources-used footer under each assistant message.
+//   - No-key mode: when the active provider needs a key and none is
+//     saved, we still run local retrieval and compose an honest
+//     extractive answer (quoted passages, real citations) instead of
+//     erroring out. Nothing is sent anywhere in that mode.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FC, type FormEvent } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,12 +23,16 @@ import {
   buildCitations,
   segmentForRender,
   getActiveProvider,
+  getProvider,
+  hasExplicitProviderChoice,
   hasKey,
   getKey,
 } from '@/features/llm';
 import type { BuiltCitation, CitationMode, ProviderId, StreamChunk } from '@/features/llm';
 import { Message } from './Message';
 import { QuickActions, type QuickAction } from './QuickActions';
+import { composeExtractiveAnswer } from './extractive';
+import { persistChat } from './persist';
 import { useTrustLog } from '@/features/trust/TrustLog';
 import { Button } from '@/components/ui/Button';
 import { TEMPLATES } from '@/features/templates/templates';
@@ -46,6 +54,7 @@ export const ChatPanel: FC = () => {
   const chunksBySource = useWorkspaceStore((s) => s.chunksBySource);
   const zoneWeights = useWorkspaceStore((s) => s.zoneWeights);
   const ingestProgress = useWorkspaceStore((s) => s.ingestProgress);
+  const templateVersion = useWorkspaceStore((s) => s.templateVersion);
 
   const addMessage = useWorkspaceStore((s) => s.addMessage);
   const appendStreamToken = useWorkspaceStore((s) => s.appendStreamToken);
@@ -77,7 +86,11 @@ export const ChatPanel: FC = () => {
       /* ignore */
     }
     return { actions: DEFAULT_ACTIONS, systemPrompt: '' };
-  }, [activeWorkspaceId]);
+    // Re-evaluate whenever the active workspace changes OR the
+    // template-version counter is bumped by the picker or the
+    // deep-link effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeWorkspaceId, templateVersion]);
 
   // Auto-scroll to bottom on new tokens.
   useEffect(() => {
@@ -132,21 +145,43 @@ export const ChatPanel: FC = () => {
       };
       addMessage(userMsg);
 
-      // Push trust entry for the model call destination.
+      // Resolve the provider and key up front: with no usable key
+      // (and a provider that needs one) we answer from local
+      // retrieval instead of erroring out, and the trust entry must
+      // say so before anything happens.
       const provider: ProviderId = getActiveProvider();
       const providerLabel = providerLabelFor(provider);
-      const trustEntry: TrustActivity = {
-        id: uuidv4(),
-        ts: Date.now(),
-        kind: 'model-call',
-        summary: `Sending question to ${providerLabel}`,
-        destination:
-          provider === 'webllm'
-            ? 'this browser tab (WebLLM)'
-            : provider === 'anthropic'
-              ? `${providerLabel} · via stateless Vercel Edge`
-              : providerLabel,
-      };
+      const apiKey = provider === 'webllm' ? '' : ((await getKey(provider)) ?? '');
+      // WebLLM is opt-in (spec §4.4): until the user deliberately
+      // picks a provider in Settings, answer from local retrieval
+      // rather than silently starting a multi-gigabyte download.
+      const localOnly =
+        provider === 'webllm' ? !hasExplicitProviderChoice() : apiKey.length === 0;
+
+      // Push trust entry for where this question is going.
+      const trustEntry: TrustActivity = localOnly
+        ? {
+            id: uuidv4(),
+            ts: Date.now(),
+            kind: 'model-call',
+            summary:
+              provider === 'webllm'
+                ? 'Answering from local retrieval — no model connected yet'
+                : `Answering from local retrieval — no key saved for ${providerLabel}`,
+            destination: 'this browser tab (local retrieval — nothing sent)',
+          }
+        : {
+            id: uuidv4(),
+            ts: Date.now(),
+            kind: 'model-call',
+            summary: `Sending question to ${providerLabel}`,
+            destination:
+              provider === 'webllm'
+                ? 'this browser tab (WebLLM)'
+                : provider === 'anthropic'
+                  ? `${providerLabel} · via stateless Vercel Edge`
+                  : providerLabel,
+          };
       pushTrust(trustEntry);
 
       // Retrieve.
@@ -162,16 +197,40 @@ export const ChatPanel: FC = () => {
         return;
       }
 
-      const contextBlock = buildContextBlock(hits);
-      const sys = `${systemPrompt || 'You are RAGülli, a reading companion. Answer using ONLY the context below. Where appropriate, quote exact phrases from the context so the UI can attach a clickable citation to them. If the answer is not in the context, say so plainly.'}\n\nCONTEXT:\n${contextBlock}`;
-      const apiKey = provider === 'webllm' ? '' : (await getKey(provider)) ?? '';
-      if (provider !== 'webllm' && !hasKey(provider)) {
-        // The dispatcher emits a friendly error chunk for this case;
-        // we still surface it inline rather than as a throw so the
-        // user can read the hint about Settings.
-        setError(`Add a key in Settings to use ${providerLabel}.`);
+      // No-key mode: compose an honest extractive answer from the
+      // retrieved passages. Every quote is a real citation because
+      // we build the content string ourselves. Nothing leaves the
+      // tab; the keyed/webllm path below is untouched.
+      if (localOnly) {
+        const { content, citations } = composeExtractiveAnswer(hits, (sourceId) => {
+          const src = sources.find((s) => s.id === sourceId);
+          return src?.filename ?? 'source';
+        });
+        const assistantMsg: ChatMessage = {
+          id: uuidv4(),
+          role: 'assistant',
+          content: '',
+          createdAt: Date.now(),
+        };
+        addMessage(assistantMsg);
+        finalizeMessage(assistantMsg.id, { content, citations });
+        pushTrust({
+          id: uuidv4(),
+          ts: Date.now(),
+          kind: 'model-response',
+          summary:
+            citations.length > 0
+              ? `Extractive answer composed from ${citations.length} passage${citations.length === 1 ? '' : 's'}`
+              : 'Local retrieval found no relevant passages',
+          destination: 'this browser tab (local retrieval — nothing sent)',
+        });
+        // Best-effort persistence so a reload keeps the thread.
+        void persistChat(activeWorkspaceId, useWorkspaceStore.getState().messages);
         return;
       }
+
+      const contextBlock = buildContextBlock(hits);
+      const sys = `${systemPrompt || 'You are RAGülli, a reading companion. Answer using ONLY the context below. Where appropriate, quote exact phrases from the context so the UI can attach a clickable citation to them. If the answer is not in the context, say so plainly.'}\n\nCONTEXT:\n${contextBlock}`;
 
       const assistantMsg: ChatMessage = {
         id: uuidv4(),
@@ -187,7 +246,7 @@ export const ChatPanel: FC = () => {
       try {
         for await (const chunk of streamChat({
           provider,
-          model: defaultModelFor(provider),
+          model: getProvider(provider).defaultModel,
           apiKey,
           messages: [
             { id: uuidv4(), role: 'system', content: sys, createdAt: Date.now() },
@@ -227,11 +286,13 @@ export const ChatPanel: FC = () => {
         destination: 'this browser tab',
       });
       setIsStreaming(false);
+      // Best-effort persistence so a reload keeps the thread.
+      void persistChat(activeWorkspaceId, useWorkspaceStore.getState().messages);
       void setIngestProgress;
     },
     [
       activeWorkspaceId,
-      sources.length,
+      sources,
       addMessage,
       pushTrust,
       buildContextBlock,
@@ -253,6 +314,17 @@ export const ChatPanel: FC = () => {
   }, [chunksBySource]);
 
   const showEmpty = sources.length === 0 && !ingestProgress;
+
+  // No-key mode indicator. hasKey is a cheap synchronous localStorage
+  // read, so recomputing per render keeps the banner honest without
+  // extra plumbing.
+  const activeProvider = getActiveProvider();
+  const keyMissing =
+    getProvider(activeProvider).needsKey && !hasKey(activeProvider);
+
+  const openSettings = useCallback(() => {
+    window.dispatchEvent(new CustomEvent('ragulli:open-settings'));
+  }, []);
 
   return (
     <aside className="h-full flex flex-col bg-[var(--color-surface-1)] border-l border-[var(--color-border)]">
@@ -296,6 +368,17 @@ export const ChatPanel: FC = () => {
       </div>
 
       <footer className="px-4 py-3 border-t border-[var(--color-border)] flex flex-col gap-2">
+        {keyMissing && sources.length > 0 ? (
+          <div
+            data-testid="no-key-hint"
+            className="flex items-center justify-between gap-2 rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-3 py-1.5 text-[11px] text-[var(--color-fg-muted)]"
+          >
+            <span>No model connected — answers quote your sources directly.</span>
+            <Button size="sm" variant="ghost" onClick={openSettings}>
+              Open Settings
+            </Button>
+          </div>
+        ) : null}
         <QuickActions
           actions={actions}
           onSelect={(a) => void submit(a.prompt)}
@@ -419,23 +502,6 @@ function providerLabelFor(p: ProviderId): string {
       return 'Moonshot Kimi';
     case 'webllm':
       return 'In-browser model';
-  }
-}
-
-function defaultModelFor(p: ProviderId): string {
-  switch (p) {
-    case 'openai':
-      return 'gpt-4o-mini';
-    case 'anthropic':
-      return 'claude-sonnet-4-5';
-    case 'google':
-      return 'gemini-1.5-flash';
-    case 'minimax':
-      return 'MiniMax-Text-01';
-    case 'kimi':
-      return 'moonshot-v1-8k';
-    case 'webllm':
-      return 'Phi-3.5-mini-instruct-q4f16_1-MLC';
   }
 }
 

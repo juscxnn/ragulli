@@ -6,21 +6,14 @@
 // drop target: dropping a file outside any zone routes it through
 // the ingest pipeline.
 
-import { useCallback, useMemo, type DragEvent, type FC, useState } from 'react';
+import { useCallback, useMemo, useRef, type ChangeEvent, type DragEvent, type FC, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useWorkspaceStore, nextZoneColor, type SourceCard } from '../store';
+import { ingestFiles } from '../ingest';
 import type { Zone as ZoneData, Chunk } from '@/features/retrieval/types';
-import {
-  assignChunkToZone,
-  putZone,
-  getChunksForSource,
-  getSource,
-} from '@/features/retrieval/store';
+import { assignChunkToZone, putZone } from '@/features/retrieval/store';
 import { Button } from '@/components/ui/Button';
 import { Dropzone } from '@/features/dropzone/Dropzone';
-import { useTrustLog } from '@/features/trust/TrustLog';
-import type { ProgressEvent } from '@/features/ingest/types';
-import { ingestFile } from '@/features/ingest/pipeline';
 import type { TrustActivity } from '@/features/llm/types';
 import { SourceCard as SourceCardView } from './Card';
 import { Zone } from './Zone';
@@ -28,45 +21,6 @@ import { Zone } from './Zone';
 export type CanvasProps = {
   workspaceId: string;
 };
-
-const DEFAULT_CHUNK_SIZE = 800;
-const DEFAULT_CHUNK_OVERLAP = 100;
-
-interface IngestPrefs {
-  chunkSize: number;
-  chunkOverlap: number;
-}
-
-function loadIngestPrefs(): IngestPrefs {
-  try {
-    const raw = localStorage.getItem('ragulli:ingest:v1');
-    if (raw) {
-      const parsed = JSON.parse(raw) as Partial<IngestPrefs>;
-      return {
-        chunkSize:
-          typeof parsed.chunkSize === 'number' ? parsed.chunkSize : DEFAULT_CHUNK_SIZE,
-        chunkOverlap:
-          typeof parsed.chunkOverlap === 'number' ? parsed.chunkOverlap : DEFAULT_CHUNK_OVERLAP,
-      };
-    }
-  } catch {
-    /* fall through */
-  }
-  return { chunkSize: DEFAULT_CHUNK_SIZE, chunkOverlap: DEFAULT_CHUNK_OVERLAP };
-}
-
-function loadIngestOpts(workspaceId: string): {
-  workspaceId: string;
-  chunkSize: number;
-  chunkOverlap: number;
-} {
-  const prefs = loadIngestPrefs();
-  return {
-    workspaceId,
-    chunkSize: prefs.chunkSize,
-    chunkOverlap: prefs.chunkOverlap,
-  };
-}
 
 function phaseLabel(
   phase: 'parse' | 'store' | 'chunk' | 'embed' | 'save' | 'done' | 'error',
@@ -89,11 +43,6 @@ function phaseLabel(
   }
 }
 
-function errMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  return String(err);
-}
-
 export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
   const sources = useWorkspaceStore((s) => s.sources);
   const chunksBySource = useWorkspaceStore((s) => s.chunksBySource);
@@ -105,14 +54,11 @@ export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
   const setZoneWeight = useWorkspaceStore((s) => s.setZoneWeight);
   const assignAll = useWorkspaceStore((s) => s.assignAllChunksForSource);
   const openViewer = useWorkspaceStore((s) => s.openSourceViewer);
-  const setChunks = useWorkspaceStore((s) => s.setChunksForSource);
-  const addSourceCard = useWorkspaceStore((s) => s.addSource);
-  const setIngestProgress = useWorkspaceStore((s) => s.setIngestProgress);
   const ingestProgress = useWorkspaceStore((s) => s.ingestProgress);
-  const pushTrust = useTrustLog((s) => s.push);
 
   const [draggingSourceId, setDraggingSourceId] = useState<string | null>(null);
   const [fileOver, setFileOver] = useState(false);
+  const addFileRef = useRef<HTMLInputElement>(null);
 
   const sourcesByZone = useMemo(() => {
     const out = new Map<string | null, SourceCard[]>();
@@ -127,80 +73,15 @@ export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
     return out;
   }, [sources, chunksBySource]);
 
+  // All the ingest mechanics (optimistic card, progress, trust
+  // entries, error surfacing) live in the shared controller so this
+  // drop target behaves exactly like the FirstDrop hero.
   const handleFiles = useCallback(
     async (files: File[]) => {
       if (files.length === 0) return;
-      for (const file of files) {
-        pushTrust({
-          id: uuidv4(),
-          ts: Date.now(),
-          kind: 'file',
-          summary: `Ingesting ${file.name}`,
-          destination: 'this browser tab (parser + embed worker)',
-        });
-        // Optimistically surface a card before the embed worker
-        // finishes, so the canvas feels responsive and the user
-        // can move the card into a zone while embed churns.
-        const optimisticId = uuidv4();
-        addSourceCard(
-          {
-            id: optimisticId,
-            workspaceId,
-            filename: file.name,
-            mimeType: file.type || 'application/octet-stream',
-            byteSize: file.size,
-            addedAt: Date.now(),
-            originOpfsPath: '',
-            parserVersion: 'v1',
-            meta: {},
-          },
-          0,
-        );
-        try {
-          const ingestOpts = loadIngestOpts(workspaceId);
-          const onProgress = makeProgressHandler(file.name, setIngestProgress);
-          const result = await ingestFile(file, ingestOpts, onProgress);
-          // Replace the optimistic card with the canonical Source row.
-          const source = await getSource(result.sourceId);
-          const chunks = await getChunksForSource(result.sourceId);
-          if (source) addSourceCard(source, chunks.length);
-          setChunks(result.sourceId, chunks);
-          setIngestProgress({
-            sourceId: result.sourceId,
-            filename: file.name,
-            phase: 'done',
-            ratio: 1,
-            summary: `Indexed ${result.chunksCreated} chunks`,
-          });
-          pushTrust({
-            id: uuidv4(),
-            ts: Date.now(),
-            kind: 'chunk',
-            summary: `Indexed ${result.chunksCreated} chunks from ${file.name}`,
-            destination: 'IndexedDB (this tab)',
-          });
-          // Clear the "done" toast after a beat so the next ingest
-          // does not see a stale entry.
-          window.setTimeout(() => setIngestProgress(null), 800);
-        } catch (err) {
-          setIngestProgress({
-            sourceId: uuidv4(),
-            filename: file.name,
-            phase: 'error',
-            ratio: 0,
-            summary: 'Ingest failed',
-            error: errMessage(err),
-          });
-          pushTrust({
-            id: uuidv4(),
-            ts: Date.now(),
-            kind: 'error',
-            summary: `Ingest failed for ${file.name}: ${errMessage(err)}`,
-          });
-        }
-      }
+      await ingestFiles(files, workspaceId);
     },
-    [workspaceId, pushTrust, setIngestProgress, addSourceCard, setChunks],
+    [workspaceId],
   );
 
   const onCanvasDragOver = (e: DragEvent<HTMLDivElement>): void => {
@@ -378,10 +259,31 @@ export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
             </section>
           ) : null}
 
-          <div>
+          <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" onClick={() => void onCreateZone()}>
               + Create zone
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => addFileRef.current?.click()}
+            >
+              + Add source
+            </Button>
+            {/* Click-to-add path for the populated canvas; drag-drop
+                anywhere on the canvas still works. */}
+            <input
+              ref={addFileRef}
+              type="file"
+              multiple
+              accept=".pdf,.docx,.md,.markdown,.txt,.html,.htm"
+              className="hidden"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                const files = Array.from(e.target.files ?? []);
+                if (files.length > 0) void handleFiles(files);
+                e.target.value = '';
+              }}
+            />
           </div>
         </div>
       )}
@@ -395,25 +297,6 @@ export const Canvas: FC<CanvasProps> = ({ workspaceId }) => {
     </div>
   );
 };
-
-function makeProgressHandler(
-  filename: string,
-  setProgress: (p: ReturnType<typeof useWorkspaceStore.getState>['ingestProgress']) => void,
-): (e: ProgressEvent) => void {
-  let lastEmit = 0;
-  return (e: ProgressEvent) => {
-    const now = Date.now();
-    if (now - lastEmit < 60 && e.ratio < 1) return;
-    lastEmit = now;
-    setProgress({
-      sourceId: 'in-progress',
-      filename,
-      phase: e.phase,
-      ratio: e.ratio,
-      summary: `${e.phase} ${Math.round(e.ratio * 100)}%`,
-    });
-  };
-}
 
 // Keep the type exported for downstream users.
 export type { TrustActivity };

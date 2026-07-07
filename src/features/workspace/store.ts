@@ -54,6 +54,11 @@ export type WorkspaceState = {
   streamingMessageId: string | null;
   ingestProgress: IngestProgress | null;
   sourceViewer: SourceViewerState;
+  /** Monotonic counter bumped whenever the active workspace's
+   *  template changes. ChatPanel subscribes to it so the picker can
+   *  trigger a re-read of `ragulli:active-template:v1` without
+   *  forcing the picker to import the chat panel. */
+  templateVersion: number;
 
   /* lifecycle */
   setActiveWorkspace: (id: string | null) => void;
@@ -94,6 +99,9 @@ export type WorkspaceState = {
 
   /* everything */
   clearAll: () => void;
+
+  /* templates */
+  bumpTemplateVersion: () => void;
 };
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({
@@ -107,6 +115,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   streamingMessageId: null,
   ingestProgress: null,
   sourceViewer: { open: false, sourceId: null, charStart: 0 },
+  templateVersion: 0,
 
   setActiveWorkspace: (id) => set({ activeWorkspaceId: id }),
   addWorkspace: (w) =>
@@ -253,7 +262,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
   closeSourceViewer: () =>
     set({ sourceViewer: { open: false, sourceId: null, charStart: 0 } }),
 
-  clearAll: () =>
+clearAll: () =>
     set({
       activeWorkspaceId: null,
       workspaces: [],
@@ -265,7 +274,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
       streamingMessageId: null,
       ingestProgress: null,
       sourceViewer: { open: false, sourceId: null, charStart: 0 },
+      templateVersion: 0,
     }),
+
+  bumpTemplateVersion: () => set((s) => ({ templateVersion: s.templateVersion + 1 })),
 }));
 
 /** Stable color rotation for newly-created zones. The first two

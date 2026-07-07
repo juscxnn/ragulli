@@ -42,57 +42,62 @@
   --shadow-glow: 0 0 0 1px rgba(224, 177, 88, 0.18), 0 0 24px -6px rgba(224, 177, 88, 0.35);
 }
 
-/* Reset and base layer. The dark theme is the only theme in V1. */
-:root {
-  color-scheme: dark;
-  background-color: var(--color-bg);
-  color: var(--color-fg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+/* Reset and base layer. The dark theme is the only theme in V1.
+   Everything element-level lives inside `@layer base` so Tailwind's
+   layered utilities always win the cascade — an unlayered `a { color }`
+   would otherwise beat any `text-*` utility on the same anchor. */
+@layer base {
+  :root {
+    color-scheme: dark;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
-* {
-  box-sizing: border-box;
-}
+  * {
+    box-sizing: border-box;
+  }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
 
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.55;
-  background: var(--color-bg);
-  color: var(--color-fg);
-  min-height: 100vh;
-}
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    min-height: 100vh;
+  }
 
-::selection {
-  background: rgba(224, 177, 88, 0.35);
-  color: var(--color-fg);
-}
+  ::selection {
+    background: rgba(224, 177, 88, 0.35);
+    color: var(--color-fg);
+  }
 
-button {
-  font: inherit;
-  color: inherit;
-}
+  button {
+    font: inherit;
+    color: inherit;
+  }
 
-a {
-  color: var(--color-accent);
-  text-decoration: none;
-}
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
 
-a:hover {
-  text-decoration: underline;
-}
+  a:hover {
+    text-decoration: underline;
+  }
 
-/* Quiet scrollbar for the scholarly look. */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
+  /* Quiet scrollbar for the scholarly look. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
 }

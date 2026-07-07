@@ -15,6 +15,7 @@ import { Toast } from '@/components/ui/Toast';
 import { db } from '@/lib/db';
 import { clearAll as clearOpfs } from '@/lib/opfs';
 import { clearAll as clearKeys } from '@/features/llm/keys';
+import { getTrustLogDb } from '@/features/trust/TrustLogDb';
 
 const HOLD_MS = 1000;
 const RELOAD_DELAY_MS = 500;
@@ -90,6 +91,15 @@ export const DangerZone: FC = () => {
       await db.citations.clear();
       await db.workspaces.clear();
       await db.chats.clear();
+    });
+    await safeRun(async () => {
+      // The trust log lives in its own DB; wipe it too so a fresh
+      // install does not inherit the previous session's activity.
+      try {
+        await getTrustLogDb().entries.clear();
+      } catch {
+        /* DB may not exist yet on a fresh install */
+      }
     });
     await safeRun(async () => {
       wipeLocalStorageExcept(PRESERVE_LOCAL_KEY_PREFIXES);
