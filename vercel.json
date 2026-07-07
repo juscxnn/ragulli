@@ -67,12 +67,5 @@
       "source": "/app/:path*",
       "destination": "/app/index.html"
     }
-  ],
-  "functions": {
-    "api/anthropic.ts": {
-      "runtime": "edge",
-      "memory": 128,
-      "maxDuration": 60
-    }
-  }
+  ]
 }
