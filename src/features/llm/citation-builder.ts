@@ -143,20 +143,20 @@ function findAllOccurrences(haystack: string, chunk: Chunk): BuiltCitation[] {
 
   // Whitespace-normalized fallback: collapse runs of whitespace
   // (including newlines) to a single space in BOTH the haystack and
-  // the chunk text, then look for matches. When we find one, the
-  // output `quote` uses the original haystack slice.
+  // the chunk text, then look for matches. Only worth doing when
+  // either side has runs of whitespace that the other could be
+  // matching against. The output `quote` is the original haystack
+  // slice, with whatever whitespace the model emitted.
+  const haystackHasRuns = /\s{2,}|\n|\t/.test(haystack);
+  const textHasRuns = /\s{2,}|\n|\t/.test(text);
+  if (!haystackHasRuns && !textHasRuns) return out;
+
   const normHaystack = haystack.replace(/\s+/g, ' ');
   const normText = text.replace(/\s+/g, ' ');
-  if (normText === text.replace(/\s+/g, ' ')) {
-    // No normalization was needed; skip.
-    return out;
-  }
   let nFrom = 0;
   while (true) {
     const at = normHaystack.indexOf(normText, nFrom);
     if (at === -1) break;
-    // Skip if this normalized position overlaps an already-found
-    // direct match (cheap heuristic).
     if (!overlapsExisting(out, at, at + normText.length)) {
       out.push({
         chunkId: chunk.id,
