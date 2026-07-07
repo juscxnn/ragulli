@@ -26,7 +26,7 @@ const ICONS: Record<string, ReactNode> = {
 };
 
 export const Templates: FC = () => (
-  <section id="templates" className="px-6 py-20 md:py-28 border-t border-[var(--color-border)]">
+  <section id="templates" className="px-6 py-16 md:py-24 border-t border-[var(--color-border)]">
     <div className="max-w-6xl mx-auto">
       <div className="max-w-2xl mb-12">
         <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">

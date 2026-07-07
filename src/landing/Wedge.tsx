@@ -4,7 +4,7 @@
 // spec §1.4. Pure SVG, no images. Subtle reveal-on-scroll via
 // IntersectionObserver + a CSS class.
 
-import { useEffect, useRef, useState, type FC } from 'react';
+import type { FC } from 'react';
 
 type QuadId = 'tl' | 'tr' | 'bl' | 'br';
 
@@ -23,34 +23,13 @@ const QUADRANTS: Quadrant[] = [
 ];
 
 export const Wedge: FC = () => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (typeof IntersectionObserver === 'undefined') {
-      setShown(true);
-      return;
-    }
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setShown(true);
-            io.disconnect();
-          }
-        }
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  // Visible by default so the tall chart never reads as an empty void
+  // when a reveal-on-scroll doesn't fire.
+  const shown = true;
 
   return (
-    <section id="wedge" className="px-6 py-20 md:py-28 border-t border-[var(--color-border)]">
-      <div className="max-w-6xl mx-auto" ref={ref}>
+    <section id="wedge" className="px-6 py-16 md:py-24 border-t border-[var(--color-border)]">
+      <div className="max-w-6xl mx-auto">
         <div className="max-w-2xl mb-12">
           <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">
             The wedge
@@ -69,7 +48,7 @@ export const Wedge: FC = () => {
         <div className="relative">
           <div
             className={[
-              'aspect-[16/10] md:aspect-[16/9] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden transition-opacity duration-700',
+              'aspect-[16/11] sm:aspect-[16/9] md:aspect-[2/1] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden transition-opacity duration-700',
               shown ? 'opacity-100' : 'opacity-0',
             ].join(' ')}
             aria-label="Four-quadrant chart comparing RAGülli against private RAG repos, hosted RAG tools, and raw GPT"
@@ -150,9 +129,9 @@ export const Wedge: FC = () => {
                       width={320}
                       height={160}
                       rx={10}
-                      fill={isUs ? 'rgba(224, 177, 88, 0.06)' : 'rgba(31, 58, 64, 0.3)'}
-                      stroke={isUs ? 'rgba(224, 177, 88, 0.45)' : 'rgba(31, 58, 64, 1)'}
-                      strokeWidth={isUs ? 1.5 : 1}
+                      fill={isUs ? 'rgba(224, 177, 88, 0.10)' : 'rgba(255, 255, 255, 0.035)'}
+                      stroke={isUs ? 'rgba(224, 177, 88, 0.6)' : 'rgba(143, 163, 150, 0.35)'}
+                      strokeWidth={isUs ? 2 : 1}
                     />
                     <text
                       x={cx}

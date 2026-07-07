@@ -7,7 +7,7 @@ import type { FC } from 'react';
 import { ArrowRightIcon, GitHubIcon } from './icons';
 
 export const CTA: FC = () => (
-  <section className="px-6 py-20 md:py-28 border-t border-[var(--color-border)]">
+  <section className="px-6 py-16 md:py-24 border-t border-[var(--color-border)]">
     <div className="max-w-3xl mx-auto text-center">
       <h2 className="font-serif font-medium text-3xl md:text-4xl text-[var(--color-fg)] leading-tight tracking-tight">
         Try it now.

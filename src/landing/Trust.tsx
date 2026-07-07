@@ -7,7 +7,7 @@ import type { FC } from 'react';
 import { TrustPanelMock } from './TrustPanelMock';
 
 export const Trust: FC = () => (
-  <section id="trust" className="px-6 py-20 md:py-28 border-t border-[var(--color-border)]">
+  <section id="trust" className="px-6 py-16 md:py-24 border-t border-[var(--color-border)]">
     <div className="max-w-6xl mx-auto grid lg:grid-cols-[1fr_1.05fr] gap-12 lg:gap-16 items-center">
       <div>
         <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">
