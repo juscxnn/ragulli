@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // SourceViewer — a Dialog that renders the original file. PDFs use
-// pdfjs-dist to extract the text of every page and render it as a
-// scrollable text column with each page wrapped in a section that
-// carries a `data-char-start` attribute. The `scrollToChar` API
-// (exposed via the forwardRef on the wrapping element) finds the
-// nearest page anchor and scrolls the section into view. Markdown,
-// text, and HTML are rendered as styled prose using the project's
-// typography tokens (Lora for long-form prose).
+// pdfjs-dist to extract text per page and render each page as a
+// scrollable section with a `data-char-start` anchor. DOCX uses
+// mammoth (same parser as ingest) — the previous version called
+// `file.text()` on a DOCX, which is a ZIP of XML, so the viewer
+// showed raw `PK` zip headers instead of the document text. Markdown,
+// plain text, and HTML render as styled prose.
 
 import {
   forwardRef,
@@ -25,6 +24,7 @@ import { Button } from '@/components/ui/Button';
 import { useWorkspaceStore } from './store';
 import { getFile } from '@/lib/opfs';
 import { markdownToPlain } from '@/features/ingest/parsers/markdown';
+import { parseDocx } from '@/features/ingest/parsers/docx';
 
 export type SourceViewerHandle = {
   scrollToChar: (charStart: number) => void;
@@ -33,10 +33,6 @@ export type SourceViewerHandle = {
 let workerSrcSet = false;
 async function ensureWorker(): Promise<void> {
   if (workerSrcSet) return;
-  // Vite resolves the `?url` import at BUILD time to the hashed asset
-  // path — the same wiring the ingest parser uses. A runtime dynamic
-  // import of the bare specifier cannot resolve in a production
-  // bundle, which left the viewer unable to render PDFs at all.
   const { default: url } = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
   GlobalWorkerOptions.workerSrc = url;
   workerSrcSet = true;
@@ -101,12 +97,6 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
   const [pages, setPages] = useState<PageSection[] | null>(null);
   const [plainText, setPlainText] = useState<string | null>(null);
 
-  const isPdf = useMemo(() => {
-    const m = source.mimeType.toLowerCase();
-    const n = source.filename.toLowerCase();
-    return m === 'application/pdf' || n.endsWith('.pdf');
-  }, [source.mimeType, source.filename]);
-
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -117,20 +107,28 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
       try {
         const file = await getFile(source.originOpfsPath);
         if (cancelled) return;
-        if (isPdf) {
+        const kind = classify(source.mimeType, source.filename);
+        if (kind === 'pdf') {
           await ensureWorker();
           const doc = await loadPdf(file);
           const sections = await extractPages(doc);
           if (cancelled) return;
           setPages(sections);
-        } else {
+        } else if (kind === 'docx') {
+          const result = await parseDocx(file);
+          if (cancelled) return;
+          setPlainText(result.text);
+        } else if (kind === 'md') {
           const text = await file.text();
           if (cancelled) return;
-          if (looksLikeMarkdown(source.filename)) {
-            setPlainText(markdownToPlain(text));
-          } else {
-            setPlainText(text);
-          }
+          setPlainText(markdownToPlain(text));
+        } else if (kind === 'text' || kind === 'html') {
+          const text = await file.text();
+          if (cancelled) return;
+          setPlainText(text);
+        } else {
+          if (cancelled) return;
+          setError(`Cannot preview this file type in the browser.`);
         }
       } catch (err) {
         if (!cancelled) setError(errMessage(err));
@@ -141,7 +139,7 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
     return () => {
       cancelled = true;
     };
-  }, [source.id, source.originOpfsPath, source.filename, isPdf]);
+  }, [source.id, source.originOpfsPath, source.filename, source.mimeType]);
 
   const scrollToChar = useCallback(
     (charStart: number) => {
@@ -161,8 +159,7 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
           return;
         }
       }
-      // Fallback for non-PDF sources: set the offset on a hidden
-      // marker, then scroll to the rough proportional position.
+      // Fallback for non-PDF sources: proportional scroll through plainText.
       const approx = Math.max(0, Math.min(1, charStart / Math.max(1, (plainText ?? '').length)));
       root.scrollTo({ top: approx * root.scrollHeight, behavior: 'smooth' });
     },
@@ -171,7 +168,6 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
 
   useImperativeHandle(ref, () => ({ scrollToChar }), [scrollToChar]);
 
-  // Apply pending scroll once content is rendered.
   useEffect(() => {
     if (loading) return;
     if (pendingCharStart > 0) {
@@ -184,7 +180,7 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
       {loading ? (
         <p className="text-xs text-[var(--color-fg-muted)]">Loading source…</p>
       ) : error ? (
-        <p className="text-xs text-[var(--color-danger)]">Could not render: {error}</p>
+        <p className="text-xs text-[var(--color-danger)]">{error}</p>
       ) : pages ? (
         <div
           ref={containerRef}
@@ -222,6 +218,25 @@ const ViewerBody = forwardRef<SourceViewerHandle, ViewerBodyProps>(function View
   );
 });
 
+type SourceKind = 'pdf' | 'docx' | 'md' | 'text' | 'html' | 'unknown';
+
+function classify(mime: string, filename: string): SourceKind {
+  const m = mime.toLowerCase();
+  const n = filename.toLowerCase();
+  if (m === 'application/pdf' || n.endsWith('.pdf')) return 'pdf';
+  if (
+    m === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    n.endsWith('.docx')
+  ) {
+    return 'docx';
+  }
+  if (m === 'application/msword' || n.endsWith('.doc')) return 'unknown';
+  if (m === 'text/markdown' || n.endsWith('.md') || n.endsWith('.markdown')) return 'md';
+  if (m === 'text/html' || n.endsWith('.html') || n.endsWith('.htm')) return 'html';
+  if (m.startsWith('text/') || n.endsWith('.txt')) return 'text';
+  return 'unknown';
+}
+
 async function loadPdf(file: File): Promise<PDFDocumentProxy> {
   const data = new Uint8Array(await file.arrayBuffer());
   const task = getDocument({ data, disableFontFace: true, useSystemFonts: false });
@@ -258,13 +273,12 @@ function joinTextItems(items: ReadonlyArray<unknown>): string {
   return out.join('').trim();
 }
 
-function looksLikeMarkdown(filename: string): boolean {
-  const n = filename.toLowerCase();
-  return n.endsWith('.md') || n.endsWith('.markdown');
-}
-
 function humanMime(mime: string): string {
   if (mime === 'application/pdf') return 'PDF';
+  if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    return 'Word document';
+  }
+  if (mime === 'application/msword') return 'Word document (legacy)';
   if (mime.startsWith('text/markdown')) return 'Markdown';
   if (mime.startsWith('text/html')) return 'HTML';
   if (mime.startsWith('text/')) return 'Text';

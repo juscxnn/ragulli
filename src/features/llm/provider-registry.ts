@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Provider registry. Each provider has a static descriptor: its
-// human-readable label, default model, whether it needs a key, and
-// whether it calls the network directly (true) or via an Edge
-// function (false). The registry is the single place Subagent D
-// iterates when rendering the Settings UI's ModelSelection tab.
+// Copyright (c) 2026 RAGülli contributors
+// Provider registry. Each provider has a static descriptor (label,
+// default model, whether it needs a key, whether it calls the network
+// directly or via an Edge function) and a `stream` function from the
+// provider module.
+//
+// The default model is the model's currently-shipped ID at the time
+// of writing. The Settings UI lets the user override this per
+// provider (`getModel` / `setModel`); the override is persisted in
+// localStorage under `ragulli:model:v1:{providerId}`. The chat panel
+// always reads the effective model via `getModel`, never via the
+// static default — that way a user who customizes a model keeps it
+// across reloads.
 
 import * as openai from './providers/openai';
 import * as anthropic from './providers/anthropic';
@@ -23,16 +30,11 @@ export interface ProviderDescriptor {
   stream: (messages: ChatMessage[], opts: StreamOptions) => AsyncIterable<StreamChunk>;
 }
 
-/**
- * Provider module map. The dispatcher uses `req.provider` to pick the
- * right module. We use a static map (no dynamic import) so the
- * bundled chart for Subagent D's Settings UI is predictable.
- */
 const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   openai: {
     id: 'openai',
     label: 'OpenAI',
-    defaultModel: 'gpt-5-mini',
+    defaultModel: 'gpt-5.4-mini',
     needsKey: true,
     corsDirect: true,
     stream: openai.stream,
@@ -56,7 +58,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   minimax: {
     id: 'minimax',
     label: 'MiniMax',
-    defaultModel: 'MiniMax-M2',
+    defaultModel: 'MiniMax-M2.7',
     needsKey: true,
     corsDirect: true,
     stream: minimax.stream,
@@ -64,7 +66,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
   kimi: {
     id: 'kimi',
     label: 'Moonshot Kimi',
-    defaultModel: 'kimi-k2-0905-preview',
+    defaultModel: 'kimi-k2.6',
     needsKey: true,
     corsDirect: true,
     stream: kimi.stream,
@@ -74,12 +76,11 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
     label: 'In-browser model',
     defaultModel: webllm.DEFAULT_MODEL,
     needsKey: false,
-    corsDirect: false, // does not leave the tab at all
+    corsDirect: false,
     stream: webllm.stream,
   },
 };
 
-/** Display order for the Settings UI. */
 export const PROVIDER_ORDER: ProviderId[] = [
   'webllm',
   'openai',
@@ -97,29 +98,24 @@ export function getProvider(id: ProviderId): ProviderDescriptor {
   return PROVIDERS[id];
 }
 
-/**
- * Persist the user's selection across sessions. We store the choice
- * in `localStorage` (NOT session storage) so a reload keeps the
- * active provider. Selection is independent of the BYOK key, which
- * is encrypted separately in `keys.ts`.
- */
-const STORAGE_KEY = 'ragulli:provider:v1';
+const MODEL_OVERRIDE_PREFIX = 'ragulli:model:v1:';
+const ACTIVE_PROVIDER_KEY = 'ragulli:provider:v1';
+
 let activeProvider: ProviderId | null = null;
 
 export function setProvider(id: ProviderId): void {
   activeProvider = id;
   try {
-    localStorage.setItem(STORAGE_KEY, id);
+    localStorage.setItem(ACTIVE_PROVIDER_KEY, id);
   } catch {
     /* localStorage may be unavailable in some sandboxes */
   }
 }
 
-/** Returns the user's selected provider, or the default if unset. */
 export function getActiveProvider(): ProviderId {
   if (activeProvider) return activeProvider;
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(ACTIVE_PROVIDER_KEY);
     if (stored && isProviderId(stored)) {
       activeProvider = stored;
       return stored;
@@ -127,24 +123,59 @@ export function getActiveProvider(): ProviderId {
   } catch {
     /* fall through */
   }
-  // Default: the in-browser provider is the only one that works
-  // without a BYOK key, so it is the right first-run default.
   activeProvider = 'webllm';
   return activeProvider;
 }
 
-/**
- * True once the user has deliberately picked a provider in Settings.
- * Spec §4.4 makes the in-browser model opt-in ("off by default"), so
- * before an explicit choice the chat answers from local retrieval
- * instead of silently starting a multi-gigabyte WebLLM download.
- */
 export function hasExplicitProviderChoice(): boolean {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(ACTIVE_PROVIDER_KEY);
     return stored !== null && isProviderId(stored);
   } catch {
     return false;
+  }
+}
+
+/**
+ * Return the model the user has configured for `id`. Falls back to
+ * the registry default when the user has not set an override. An
+ * override of the empty string is treated as "use the default" so a
+ * user can clear their customisation by emptying the input.
+ */
+export function getModel(id: ProviderId): string {
+  try {
+    const stored = localStorage.getItem(MODEL_OVERRIDE_PREFIX + id);
+    if (stored && stored.trim().length > 0) return stored.trim();
+  } catch {
+    /* fall through */
+  }
+  return PROVIDERS[id].defaultModel;
+}
+
+/**
+ * Persist the user's model choice for `id`. Pass an empty string to
+ * clear the override (revert to the registry default).
+ */
+export function setModel(id: ProviderId, model: string): void {
+  try {
+    if (model.trim().length === 0) {
+      localStorage.removeItem(MODEL_OVERRIDE_PREFIX + id);
+    } else {
+      localStorage.setItem(MODEL_OVERRIDE_PREFIX + id, model.trim());
+    }
+  } catch {
+    /* localStorage may be unavailable in some sandboxes */
+  }
+}
+
+/** Reset every provider's model override back to its registry default. */
+export function clearModelOverrides(): void {
+  try {
+    for (const id of Object.keys(PROVIDERS) as ProviderId[]) {
+      localStorage.removeItem(MODEL_OVERRIDE_PREFIX + id);
+    }
+  } catch {
+    /* ignore */
   }
 }
 

@@ -33,6 +33,7 @@ import {
   segmentForRender,
   getActiveProvider,
   getProvider,
+  getModel,
   hasExplicitProviderChoice,
   hasKey,
   getKey,
@@ -254,7 +255,7 @@ export const ChatPanel: FC = () => {
       try {
         for await (const chunk of streamChat({
           provider,
-          model: getProvider(provider).defaultModel,
+          model: getModel(provider),
           apiKey,
           messages: [
             { id: uuidv4(), role: 'system', content: sys, createdAt: Date.now() },
