@@ -1,13 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
+// Copyright (c) 2026 RAGülli contributors
 // MiniMax streaming provider. Uses the same OpenAI-compatible
-// `delta.content` SSE shape that the OpenAI/MiniMax/Moonshot family
+// `delta.content` SSE shape that the OpenAI / MiniMax / Moonshot family
 // emits. We share the SSE parser with OpenAI but point at MiniMax's
 // own endpoint.
 //
-// NOTE: the official MiniMax docs page lists the endpoint as
-// `https://api.minimaxi.chat/v1/text/chatcompletion_v2`. We follow
-// the spec's locked URL verbatim.
+// IMPORTANT: MiniMax returns a JSON envelope ({"base_resp":{...}})
+// on auth / model errors with HTTP 200, instead of an error status.
+// The previous implementation silently treated this as an empty SSE
+// stream and yielded `done` with no content — leaving the user with
+// a blank assistant message and no explanation. We now read the
+// response body fully, detect the JSON envelope by its first byte,
+// and surface the MiniMax status_code / status_msg as an error chunk.
 
 import type { ChatMessage } from '@/features/retrieval/types';
 import type { StreamChunk, StreamOptions, OpenAISSEEvent } from '../types';
@@ -23,6 +27,22 @@ function toMiniMaxMessages(messages: ChatMessage[]): MiniMaxBody['messages'] {
   return messages
     .filter((m) => m.role === 'system' || m.role === 'user' || m.role === 'assistant')
     .map((m) => ({ role: m.role, content: m.content }));
+}
+
+function formatMiniMaxError(jsonText: string): string {
+  try {
+    const obj = JSON.parse(jsonText) as {
+      base_resp?: { status_code?: number; status_msg?: string };
+    };
+    const code = obj.base_resp?.status_code;
+    const msg = obj.base_resp?.status_msg ?? jsonText.slice(0, 240);
+    if (typeof code === 'number') {
+      return `MiniMax (code ${code}): ${msg}`;
+    }
+    return `MiniMax: ${msg}`;
+  } catch {
+    return `MiniMax: ${jsonText.slice(0, 240)}`;
+  }
 }
 
 export async function* stream(
@@ -59,7 +79,7 @@ export async function* stream(
     return;
   }
 
-  if (!res.ok || !res.body) {
+  if (!res.ok) {
     const detail = await safeReadError(res);
     yield {
       type: 'error',
@@ -68,7 +88,28 @@ export async function* stream(
     return;
   }
 
-  for await (const evt of parseSSEResponse<OpenAISSEEvent>(res, { signal: opts.signal })) {
+  // Drain the body fully so we can detect a JSON envelope error
+  // response. MiniMax uses the same endpoint for both SSE and JSON
+  // and distinguishes by the request rather than the body shape, so
+  // a `stream: true` request usually returns SSE — but auth or model
+  // errors can come back as JSON with HTTP 200.
+  const fullText = await res.text();
+  const trimmed = fullText.trimStart();
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    yield { type: 'error', message: formatMiniMaxError(fullText) };
+    return;
+  }
+
+  // Reconstruct a stream from the cached text so the SSE parser can
+  // iterate the same way it does for other providers.
+  const reconstructed = new Response(fullText, {
+    headers: res.headers,
+    status: res.status,
+    statusText: res.statusText,
+  });
+  for await (const evt of parseSSEResponse<OpenAISSEEvent>(reconstructed, {
+    signal: opts.signal,
+  })) {
     const text = evt.choices?.[0]?.delta?.content;
     if (text) yield { type: 'token', text };
   }
