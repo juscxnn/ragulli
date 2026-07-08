@@ -5,14 +5,15 @@
 // directly or via an Edge function) and a `stream` function from the
 // provider module.
 //
-// The default model is the model's currently-shipped ID at the time
-// of writing. The Settings UI lets the user override this per
-// provider (`getModel` / `setModel`); the override is persisted in
-// localStorage under `ragulli:model:v1:{providerId}`. The chat panel
-// always reads the effective model via `getModel`, never via the
-// static default — that way a user who customizes a model keeps it
-// across reloads.
+// Active provider state lives in a tiny Zustand store so that changes
+// propagate to every component that reads it (chat panel, settings,
+// trust log) without prop-drilling. The previous version cached the
+// active provider in a module-level variable; that meant Settings
+// could update localStorage while the chat panel kept reading a stale
+// "webllm" default, leaving the user stuck in local-only mode with
+// no visible indicator. The store fixes that.
 
+import { create } from 'zustand';
 import * as openai from './providers/openai';
 import * as anthropic from './providers/anthropic';
 import * as google from './providers/google';
@@ -44,7 +45,7 @@ const PROVIDERS: Record<ProviderId, ProviderDescriptor> = {
     label: 'Anthropic',
     defaultModel: 'claude-opus-4-8',
     needsKey: true,
-    corsDirect: false, // routed through the Vercel Edge proxy
+    corsDirect: false,
     stream: anthropic.stream,
   },
   google: {
@@ -98,50 +99,78 @@ export function getProvider(id: ProviderId): ProviderDescriptor {
   return PROVIDERS[id];
 }
 
-const MODEL_OVERRIDE_PREFIX = 'ragulli:model:v1:';
+// --- active provider state (Zustand) ---------------------------------
+
 const ACTIVE_PROVIDER_KEY = 'ragulli:provider:v1';
+const MODEL_OVERRIDE_PREFIX = 'ragulli:model:v1:';
 
-let activeProvider: ProviderId | null = null;
-
-export function setProvider(id: ProviderId): void {
-  activeProvider = id;
-  try {
-    localStorage.setItem(ACTIVE_PROVIDER_KEY, id);
-  } catch {
-    /* localStorage may be unavailable in some sandboxes */
-  }
+interface ProviderState {
+  activeProviderId: ProviderId;
+  setActiveProvider: (id: ProviderId) => void;
 }
 
-export function getActiveProvider(): ProviderId {
-  if (activeProvider) return activeProvider;
+function readStoredProvider(): ProviderId | null {
   try {
     const stored = localStorage.getItem(ACTIVE_PROVIDER_KEY);
-    if (stored && isProviderId(stored)) {
-      activeProvider = stored;
-      return stored;
+    if (stored && isProviderId(stored)) return stored;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+export const useProviderStore = create<ProviderState>((set) => ({
+  // Initial: the user's last choice if any, otherwise webllm. We do
+  // NOT block on storage here — webllm is the safe default if the
+  // user is on a fresh tab; the chat panel re-evaluates on every
+  // render so a Settings change is visible immediately.
+  activeProviderId: readStoredProvider() ?? 'webllm',
+  setActiveProvider: (id) => {
+    try {
+      localStorage.setItem(ACTIVE_PROVIDER_KEY, id);
+    } catch {
+      /* localStorage may be unavailable in some sandboxes */
     }
-  } catch {
-    /* fall through */
-  }
-  activeProvider = 'webllm';
-  return activeProvider;
+    set({ activeProviderId: id });
+  },
+}));
+
+// --- synchronous accessors used by non-React paths -------------------
+
+/** Read the current active provider without subscribing to the store. */
+export function getActiveProvider(): ProviderId {
+  return useProviderStore.getState().activeProviderId;
 }
 
+/** Imperatively switch the active provider. */
+export function setProvider(id: ProviderId): void {
+  useProviderStore.getState().setActiveProvider(id);
+}
+
+/**
+ * True once the user has explicitly picked a provider (i.e., the
+ * active id is something other than the runtime default). WebLLM is
+ * opt-in (spec §4.4); until the user explicitly picks a provider,
+ * the chat panel answers from local retrieval rather than silently
+ * starting a multi-gigabyte download.
+ */
 export function hasExplicitProviderChoice(): boolean {
+  // "Explicit" means the user has clicked a provider — i.e., the
+  // store has written to localStorage at least once. The store
+  // writes only on explicit setActiveProvider calls, so a fresh
+  // tab falls back to webllm without writing. That keeps
+  // hasExplicitProviderChoice honest: it tells you whether the
+  // current active id was chosen by the user, not just defaulted.
   try {
-    const stored = localStorage.getItem(ACTIVE_PROVIDER_KEY);
-    return stored !== null && isProviderId(stored);
+    return localStorage.getItem(ACTIVE_PROVIDER_KEY) !== null;
   } catch {
     return false;
   }
 }
 
-/**
- * Return the model the user has configured for `id`. Falls back to
- * the registry default when the user has not set an override. An
- * override of the empty string is treated as "use the default" so a
- * user can clear their customisation by emptying the input.
- */
+// --- model override storage ------------------------------------------
+
+/** Return the model the user has configured for `id`. */
 export function getModel(id: ProviderId): string {
   try {
     const stored = localStorage.getItem(MODEL_OVERRIDE_PREFIX + id);
@@ -152,10 +181,6 @@ export function getModel(id: ProviderId): string {
   return PROVIDERS[id].defaultModel;
 }
 
-/**
- * Persist the user's model choice for `id`. Pass an empty string to
- * clear the override (revert to the registry default).
- */
 export function setModel(id: ProviderId, model: string): void {
   try {
     if (model.trim().length === 0) {
@@ -164,11 +189,10 @@ export function setModel(id: ProviderId, model: string): void {
       localStorage.setItem(MODEL_OVERRIDE_PREFIX + id, model.trim());
     }
   } catch {
-    /* localStorage may be unavailable in some sandboxes */
+    /* ignore */
   }
 }
 
-/** Reset every provider's model override back to its registry default. */
 export function clearModelOverrides(): void {
   try {
     for (const id of Object.keys(PROVIDERS) as ProviderId[]) {

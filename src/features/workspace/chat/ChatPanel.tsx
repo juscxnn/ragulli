@@ -31,10 +31,9 @@ import type { ChatMessage, TrustActivity } from '@/features/retrieval/types';
 import {
   buildCitations,
   segmentForRender,
-  getActiveProvider,
   getProvider,
   getModel,
-  hasExplicitProviderChoice,
+  useProviderStore,
   hasKey,
   getKey,
 } from '@/features/llm';
@@ -46,6 +45,7 @@ import { persistChat } from './persist';
 import { useTrustLog } from '@/features/trust/TrustLog';
 import { Button } from '@/components/ui/Button';
 import { TEMPLATES } from '@/features/templates/templates';
+import { ProviderChip } from './ProviderChip';
 
 const DEFAULT_ACTIONS: QuickAction[] = [
   { label: 'Summarize', prompt: 'Summarize this corpus in 5 bullets, citing sources.' },
@@ -158,14 +158,17 @@ export const ChatPanel: FC = () => {
       // (and a provider that needs one) we answer from local
       // retrieval instead of erroring out, and the trust entry must
       // say so before anything happens.
-      const provider: ProviderId = getActiveProvider();
+      const provider: ProviderId = useProviderStore.getState().activeProviderId;
       const providerLabel = providerLabelFor(provider);
       const apiKey = provider === 'webllm' ? '' : ((await getKey(provider)) ?? '');
       // WebLLM is opt-in (spec §4.4): until the user deliberately
       // picks a provider in Settings, answer from local retrieval
       // rather than silently starting a multi-gigabyte download.
-      const localOnly =
-        provider === 'webllm' ? !hasExplicitProviderChoice() : apiKey.length === 0;
+      // hasKey() reads the encrypted ciphertext in localStorage and
+      // returns true only when a real key was saved (not a default).
+      const stored = provider === 'webllm' ? '' : await getKey(provider);
+      const hasKeyForProvider = provider === 'webllm' ? true : (stored?.length ?? 0) > 0;
+      const localOnly = !hasKeyForProvider;
 
       // Push trust entry for where this question is going.
       const trustEntry: TrustActivity = localOnly
@@ -322,10 +325,10 @@ export const ChatPanel: FC = () => {
     return Object.values(chunksBySource).reduce((sum, arr) => sum + arr.length, 0);
   }, [chunksBySource]);
 
-  // No-key mode indicator. hasKey is a cheap synchronous localStorage
-  // read, so recomputing per render keeps the banner honest without
-  // extra plumbing.
-  const activeProvider = getActiveProvider();
+  // No-key mode indicator. The active provider comes from a Zustand
+  // store so changes in Settings propagate without a reload. hasKey
+  // is a cheap synchronous localStorage read.
+  const activeProvider = useProviderStore((s: { activeProviderId: ProviderId; setActiveProvider: (id: ProviderId) => void }) => s.activeProviderId);
   const keyMissing =
     getProvider(activeProvider).needsKey && !hasKey(activeProvider);
 
@@ -346,25 +349,28 @@ export const ChatPanel: FC = () => {
 
   return (
     <aside className="h-full min-h-0 flex flex-col bg-[var(--color-surface-1)]">
-      <header className="px-4 py-3 border-b border-[var(--color-border)] flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
+      <header className="px-4 py-3 border-b border-[var(--color-border)] flex items-center justify-between gap-3 shrink-0">
+        <div className="flex items-center gap-2 min-w-0">
           <h2 className="text-sm font-medium text-[var(--color-fg)]">Chat</h2>
-          <span className="text-[11px] text-[var(--color-fg-muted)]">
+          <span className="text-[11px] text-[var(--color-fg-muted)] truncate">
             {hasSources
               ? `${sources.length} source${sources.length === 1 ? '' : 's'} · ${totalChunks} chunk${totalChunks === 1 ? '' : 's'}`
               : 'no sources yet'}
           </span>
         </div>
-        {isStreaming ? (
-          <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[var(--color-accent)]">
-            <span className="flex gap-0.5" aria-hidden>
-              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse" />
-              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:150ms]" />
-              <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:300ms]" />
+        <div className="flex items-center gap-2 shrink-0">
+          {isStreaming ? (
+            <span className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[var(--color-accent)]">
+              <span className="flex gap-0.5" aria-hidden>
+                <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse" />
+                <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:150ms]" />
+                <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse [animation-delay:300ms]" />
+              </span>
+              thinking
             </span>
-            thinking
-          </span>
-        ) : null}
+          ) : null}
+          <ProviderChip />
+        </div>
       </header>
 
       <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-5">

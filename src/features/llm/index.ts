@@ -15,6 +15,7 @@ export {
   setModel,
   clearModelOverrides,
   hasExplicitProviderChoice,
+  useProviderStore,
 } from './provider-registry';
 export type {
   ProviderId,

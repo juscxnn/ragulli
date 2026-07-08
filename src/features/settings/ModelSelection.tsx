@@ -19,6 +19,8 @@ import {
   getAvailableProviders,
   getModel,
   setModel,
+  setProvider,
+  useProviderStore,
   type ProviderDescriptor,
 } from '@/features/llm/provider-registry';
 import { hasKey, setKey, clearAll as clearKeys } from '@/features/llm/keys';
@@ -160,6 +162,7 @@ function errMessage(err: unknown): string {
 
 export const ModelSelection: FC = () => {
   const [state, setState] = useState<Record<ProviderId, RowState>>(makeInitialState);
+  const activeProvider = useProviderStore((s) => s.activeProviderId);
 
   useEffect(() => {
     const refresh = (): void => {
@@ -186,6 +189,11 @@ export const ModelSelection: FC = () => {
     if (!s || !s.apiKeyDraft) return;
     try {
       await setKey(p.id, s.apiKeyDraft);
+      // Saving a key for a provider activates that provider. The
+      // previous flow kept the active provider at its (cached)
+      // default, so the chat panel kept showing "no model connected"
+      // even after the user saved their key.
+      setProvider(p.id);
       setState((prev) => ({
         ...prev,
         [p.id]: { ...prev[p.id]!, hasKey: true, apiKeyDraft: '' },
@@ -196,6 +204,10 @@ export const ModelSelection: FC = () => {
         [p.id]: { ...prev[p.id]!, testState: 'fail', testMessage: errMessage(err) },
       }));
     }
+  };
+
+  const onActivate = (p: ProviderDescriptor): void => {
+    setProvider(p.id);
   };
 
   const onSaveModel = (p: ProviderDescriptor): void => {
@@ -274,13 +286,26 @@ export const ModelSelection: FC = () => {
       {getAvailableProviders().map((p) => {
         const s = state[p.id];
         if (!s) return null;
+        const isActive = p.id === activeProvider;
         return (
           <article
             key={p.id}
-            className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-2)] p-4 flex flex-col gap-3"
+            className={[
+              'rounded-lg border p-4 flex flex-col gap-3',
+              isActive
+                ? 'border-[var(--color-accent)]/50 bg-[var(--color-surface-2)]'
+                : 'border-[var(--color-border)] bg-[var(--color-surface-2)]',
+            ].join(' ')}
           >
             <header className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-[var(--color-fg)]">{p.label}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium text-[var(--color-fg)]">{p.label}</h3>
+                {isActive ? (
+                  <Chip size="sm" tone="accent" leadingDot>
+                    Active
+                  </Chip>
+                ) : null}
+              </div>
               <div className="flex items-center gap-2">
                 {p.corsDirect ? (
                   <Chip size="sm" tone="success">
@@ -308,6 +333,13 @@ export const ModelSelection: FC = () => {
                 ) : null}
               </div>
             </header>
+            {!isActive ? (
+              <div className="-mt-1">
+                <Button size="sm" variant="ghost" onClick={() => onActivate(p)}>
+                  Use this provider
+                </Button>
+              </div>
+            ) : null}
 
             {p.needsKey ? (
               <div className="flex flex-col gap-2">
