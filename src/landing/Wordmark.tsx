@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Wordmark — the logo mark + wordmark used across the landing site.
-// Reads the umlaut-bearing wordmark as a literal Unicode string so the
-// U+0308 (combining diaeresis) is preserved byte-for-byte in the
-// rendered DOM. The mark is the same library-stamp SVG used in
-// public/logo-mark.svg, inlined as a React component to avoid the
-// extra HTTP request on the landing page.
+// Copyright (c) 2026 RAGülli contributors
+// Wordmark — the brand mark + "RAGülli" wordmark used across the
+// landing site. The mark is the same two-amber-dots composition
+// used in public/logo-mark.svg, inlined as a React component to
+// avoid the extra HTTP request on the landing page.
+//
+// The diaeresis on the "u" is preserved byte-for-byte as U+0308
+// (combining diaeresis) by using a literal Unicode string, so the
+// rendered DOM matches the spec exactly.
 
 import type { FC } from 'react';
 
@@ -15,9 +17,9 @@ type Props = {
 };
 
 const SIZES = {
-  sm: { mark: 22, fontSize: 'text-base', gap: 'gap-2' },
-  md: { mark: 28, fontSize: 'text-xl', gap: 'gap-2.5' },
-  lg: { mark: 40, fontSize: 'text-3xl', gap: 'gap-3' },
+  sm: { mark: 20, fontSize: 'text-base', gap: 'gap-2' },
+  md: { mark: 26, fontSize: 'text-xl', gap: 'gap-2.5' },
+  lg: { mark: 36, fontSize: 'text-3xl', gap: 'gap-3' },
 } as const;
 
 export const Wordmark: FC<Props> = ({ size = 'md', showTagline = false }) => {
@@ -32,24 +34,22 @@ export const Wordmark: FC<Props> = ({ size = 'md', showTagline = false }) => {
         aria-hidden="true"
         role="img"
       >
-        <rect width="512" height="512" rx="96" fill="#0B2027" />
-        <g
-          transform="translate(96 96)"
-          fill="none"
-          stroke="#E0B158"
-          strokeWidth={14}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M40 40 L40 280" />
-          <path d="M40 40 L40 280 L200 240 L200 0 Z" fill="#E0B158" fillOpacity="0.1" />
-          <line x1="220" y1="80" x2="380" y2="80" />
-          <line x1="220" y1="160" x2="380" y2="160" />
-          <line x1="220" y1="240" x2="320" y2="240" />
-        </g>
+        <rect width="512" height="512" rx="112" ry="112" fill="#0B2027" />
+        <circle cx="194" cy="256" r="56" fill="#E0B158" />
+        <circle cx="318" cy="256" r="56" fill="#E0B158" />
       </svg>
       <span className={`font-serif font-medium text-[var(--color-fg)] ${s.fontSize}`}>
-        RAGülli
+        RAG<span className="relative inline-block">
+          u
+          <span
+            aria-hidden="true"
+            className="absolute left-1/2 -translate-x-1/2 flex gap-[3px]"
+            style={{ top: '-0.32em' }}
+          >
+            <span className="block w-[5px] h-[5px] rounded-full bg-[var(--color-accent)]" />
+            <span className="block w-[5px] h-[5px] rounded-full bg-[var(--color-accent)]" />
+          </span>
+        </span>lli
       </span>
       {showTagline ? (
         <span className="hidden sm:inline text-xs text-[var(--color-fg-muted)] ml-3 font-sans">
