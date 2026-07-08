@@ -1,190 +1,161 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-// Copyright (c) 2026 RAGülli contributors
-// Wedge — the "we live in the empty square" 4-quadrant chart from
-// spec §1.4. Pure SVG, no images. Subtle reveal-on-scroll via
-// IntersectionObserver + a CSS class.
+// Copyright (c) 2026 RAGülli contributors
+// Wedge — the "empty square, occupied" 4-quadrant chart from spec §1.4.
+// Pure SVG, no images. The previous version had a reveal-on-scroll
+// animation and a "YOU ARE HERE" pin — both cut. The chart itself is
+// the argument. The RAGülli cell is the only one with a fill.
 
 import type { FC } from 'react';
 
-type QuadId = 'tl' | 'tr' | 'bl' | 'br';
-
 type Quadrant = {
-  id: QuadId;
+  id: 'tl' | 'tr' | 'bl' | 'br';
   label: string;
-  sub: string;
-  us?: boolean;
+  ours?: boolean;
 };
 
 const QUADRANTS: Quadrant[] = [
-  { id: 'tl', label: 'private RAG repos', sub: 'engineer-grade (ugly)' },
-  { id: 'tr', label: 'RAGülli', sub: 'polished + browser-only', us: true },
-  { id: 'bl', label: 'raw GPT + manual upload', sub: 'ugly + uploads' },
-  { id: 'br', label: 'NotebookLM · Humata · ChatPDF', sub: 'polished + uploads' },
+  { id: 'tl', label: 'private RAG repos' },
+  { id: 'tr', label: 'RAGülli', ours: true },
+  { id: 'bl', label: 'raw GPT + manual upload' },
+  { id: 'br', label: 'NotebookLM · Humata · ChatPDF' },
 ];
 
-export const Wedge: FC = () => {
-  // Visible by default so the tall chart never reads as an empty void
-  // when a reveal-on-scroll doesn't fire.
-  const shown = true;
-
-  return (
-    <section id="wedge" className="px-6 py-16 md:py-24 border-t border-[var(--color-border)]">
-      <div className="max-w-6xl mx-auto">
-        <div className="max-w-2xl mb-12">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--color-accent)] mb-3">
-            The wedge
-          </p>
-          <h2 className="font-serif font-medium text-3xl md:text-4xl text-[var(--color-fg)] leading-tight tracking-tight">
-            The empty square, occupied.
-          </h2>
-          <p className="mt-4 text-[var(--color-fg-muted)] text-base md:text-lg leading-relaxed">
-            Every existing tool is either engineer-grade or hosted.
-            RAGülli is the first polished, zero-install, browser-only
-            private RAG tool. The architecture is the moat: competitors
-            cannot copy the trust story without giving up their backend.
-          </p>
-        </div>
-
-        <div className="relative">
-          <div
-            className={[
-              'aspect-[16/11] sm:aspect-[16/9] md:aspect-[2/1] w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden transition-opacity duration-700',
-              shown ? 'opacity-100' : 'opacity-0',
-            ].join(' ')}
-            aria-label="Four-quadrant chart comparing RAGülli against private RAG repos, hosted RAG tools, and raw GPT"
-            role="img"
-          >
-            <svg
-              viewBox="0 0 800 500"
-              className="w-full h-full"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Axes */}
-              <line x1="400" y1="30" x2="400" y2="470" stroke="var(--color-border)" strokeWidth="1" />
-              <line x1="30" y1="250" x2="770" y2="250" stroke="var(--color-border)" strokeWidth="1" />
-
-              {/* Axis labels */}
-              <text
-                x="30"
-                y="22"
-                fontSize="11"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-                fill="var(--color-fg-muted)"
-                letterSpacing="1.5"
-              >
-                ENGINEER-GRADE (UGLY)
-              </text>
-              <text
-                x="770"
-                y="22"
-                fontSize="11"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-                fill="var(--color-accent)"
-                textAnchor="end"
-                letterSpacing="1.5"
-              >
-                POLISHED
-              </text>
-              <text
-                x="30"
-                y="488"
-                fontSize="11"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-                fill="var(--color-fg-muted)"
-                letterSpacing="1.5"
-              >
-                HOSTED (UPLOADS)
-              </text>
-              <text
-                x="770"
-                y="488"
-                fontSize="11"
-                fontFamily="ui-sans-serif, system-ui, sans-serif"
-                fill="var(--color-accent)"
-                textAnchor="end"
-                letterSpacing="1.5"
-              >
-                BROWSER-ONLY (PRIVATE)
-              </text>
-
-              {/* Quadrant fills + labels */}
-              {QUADRANTS.map((q, i) => {
-                const cx = q.id === 'tl' || q.id === 'bl' ? 200 : 600;
-                const cy = q.id === 'tl' || q.id === 'tr' ? 140 : 360;
-                const isUs = !!q.us;
-                const reveal = shown;
-                return (
-                  <g
-                    key={q.id}
-                    style={{
-                      opacity: reveal ? 1 : 0,
-                      transformOrigin: `${cx}px ${cy}px`,
-                      transition: `opacity 700ms ease ${300 + i * 120}ms, transform 700ms ease ${300 + i * 120}ms`,
-                      transform: reveal ? 'scale(1)' : 'scale(0.92)',
-                    }}
-                  >
-                    <rect
-                      x={cx - 160}
-                      y={cy - 80}
-                      width={320}
-                      height={160}
-                      rx={10}
-                      fill={isUs ? 'rgba(224, 177, 88, 0.10)' : 'rgba(255, 255, 255, 0.035)'}
-                      stroke={isUs ? 'rgba(224, 177, 88, 0.6)' : 'rgba(143, 163, 150, 0.35)'}
-                      strokeWidth={isUs ? 2 : 1}
-                    />
-                    <text
-                      x={cx}
-                      y={cy - 18}
-                      fontSize="16"
-                      fontFamily="Lora, Georgia, serif"
-                      fontWeight={isUs ? 600 : 500}
-                      fill={isUs ? 'var(--color-accent)' : 'var(--color-fg)'}
-                      textAnchor="middle"
-                    >
-                      {q.label}
-                    </text>
-                    <text
-                      x={cx}
-                      y={cy + 6}
-                      fontSize="11"
-                      fontFamily="ui-sans-serif, system-ui, sans-serif"
-                      fill="var(--color-fg-muted)"
-                      textAnchor="middle"
-                      letterSpacing="1"
-                    >
-                      {q.sub}
-                    </text>
-                    {isUs ? (
-                      <g>
-                        <circle cx={cx} cy={cy + 26} r={4} fill="var(--color-accent)" />
-                        <text
-                          x={cx}
-                          y={cy + 56}
-                          fontSize="10"
-                          fontFamily="ui-sans-serif, system-ui, sans-serif"
-                          fill="var(--color-accent)"
-                          textAnchor="middle"
-                          letterSpacing="2"
-                        >
-                          YOU ARE HERE
-                        </text>
-                      </g>
-                    ) : null}
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-          <p className="mt-6 text-sm text-[var(--color-fg-muted)] leading-relaxed max-w-2xl">
-            The top-right cell — polished and browser-only — has been
-            empty for years. Every other private RAG tool is either a
-            repo full of scripts, or it sends your files to a backend.
-            RAGülli is the first to ship a real product in that cell.
-          </p>
-        </div>
+export const Wedge: FC = () => (
+  <section
+    id="wedge"
+    className="px-6 py-24 md:py-32 border-t border-[var(--color-border)]"
+  >
+    <div className="max-w-5xl mx-auto">
+      <div className="max-w-xl mb-16">
+        <h2 className="font-serif font-normal text-[var(--color-fg)] text-3xl md:text-4xl leading-[1.1] tracking-[-0.015em]">
+          The empty square,
+          <br />
+          occupied.
+        </h2>
+        <p className="mt-6 text-[var(--color-fg-muted)] text-base md:text-lg leading-[1.6]">
+          Every other private RAG tool is either a repo full of scripts
+          or a service that uploads your files. RAGülli is the first
+          polished product in the empty cell.
+        </p>
       </div>
-    </section>
-  );
-};
 
+      <div
+        className="aspect-[2/1] w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-1)] overflow-hidden"
+        aria-label="Four-quadrant chart comparing RAGülli against private RAG repos, hosted RAG tools, and raw GPT with manual upload"
+        role="img"
+      >
+        <svg
+          viewBox="0 0 800 400"
+          className="w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Axes */}
+          <line
+            x1="400"
+            y1="24"
+            x2="400"
+            y2="376"
+            stroke="var(--color-border)"
+            strokeWidth="1"
+          />
+          <line
+            x1="24"
+            y1="200"
+            x2="776"
+            y2="200"
+            stroke="var(--color-border)"
+            strokeWidth="1"
+          />
+
+          {/* Axis labels, only on the sides that describe the position we occupy */}
+          <text
+            x="24"
+            y="18"
+            fontSize="10"
+            fontFamily="Inter, system-ui, sans-serif"
+            fill="var(--color-fg-muted)"
+            letterSpacing="2"
+          >
+            ENGINEER-GRADE
+          </text>
+          <text
+            x="776"
+            y="18"
+            fontSize="10"
+            fontFamily="Inter, system-ui, sans-serif"
+            fill="var(--color-fg-muted)"
+            textAnchor="end"
+            letterSpacing="2"
+          >
+            POLISHED
+          </text>
+          <text
+            x="24"
+            y="392"
+            fontSize="10"
+            fontFamily="Inter, system-ui, sans-serif"
+            fill="var(--color-fg-muted)"
+            letterSpacing="2"
+          >
+            HOSTED
+          </text>
+          <text
+            x="776"
+            y="392"
+            fontSize="10"
+            fontFamily="Inter, system-ui, sans-serif"
+            fill="var(--color-fg-muted)"
+            textAnchor="end"
+            letterSpacing="2"
+          >
+            BROWSER-ONLY
+          </text>
+
+          {/* Quadrant rectangles + labels. RAGülli (tr) is the only one with a fill. */}
+          {QUADRANTS.map((q) => {
+            const cx = q.id === 'tl' || q.id === 'bl' ? 212 : 588;
+            const cy = q.id === 'tl' || q.id === 'tr' ? 112 : 288;
+            return (
+              <g key={q.id}>
+                <rect
+                  x={cx - 170}
+                  y={cy - 70}
+                  width={340}
+                  height={140}
+                  rx={6}
+                  fill={
+                    q.ours
+                      ? 'rgba(224, 177, 88, 0.08)'
+                      : 'transparent'
+                  }
+                  stroke={
+                    q.ours
+                      ? 'rgba(224, 177, 88, 0.5)'
+                      : 'var(--color-border)'
+                  }
+                  strokeWidth={q.ours ? 1.5 : 1}
+                />
+                <text
+                  x={cx}
+                  y={cy + 5}
+                  fontSize={q.ours ? 18 : 14}
+                  fontFamily="Lora, Georgia, serif"
+                  fontWeight={q.ours ? 500 : 400}
+                  fill={
+                    q.ours
+                      ? 'var(--color-accent)'
+                      : 'var(--color-fg-muted)'
+                  }
+                  textAnchor="middle"
+                  letterSpacing={q.ours ? '0.5' : '0'}
+                >
+                  {q.label}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  </section>
+);
